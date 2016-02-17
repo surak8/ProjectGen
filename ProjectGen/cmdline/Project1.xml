@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>cruncher</name>
+    </assembly>
+    <members>
+        <member name="F:Step1.SimpleOptionParser.optionDefs">
+            <summary>
+            Descriptions of accepted options.
+            </summary>
+        </member>
+        <member name="F:Step1.SimpleOptionParser.args">
+            <summary>
+            The command line arguments to be parsed.
+            </summary>
+        </member>
+        <member name="F:Step1.SimpleOptionParser.iarg">
+            <summary>
+            Current position in the command line arguments list.
+            </summary>
+        </member>
+        <member name="M:Step1.SimpleOptionParser.GetOption">
+            <summary>
+            Get the next option/argument pair from the command line.
+            </summary>
+            <returns>
+            Returns True if an argument was successfully parsed.
+            If True is returned, then the Option property contains the parsed option,
+            and the Argument property contains the parsed option.
+            Returns False on error or end of options.
+            If end of options is reached, Eof is set to True.
+            If Eof is False, then the Error property contains the error.
+            </returns>
+        </member>
+        <member name="M:Step1.SimpleOptionParser.ParseOptions(System.Collections.Generic.IList{System.String})">
+            <summary>
+            Parses the array of options definitions to create internal list of OptionDef objects.
+            </summary>
+            <param name="options">An IList of options definitions.</param>
+            <returns>
+            A list of OptionDef structures that are used by the GetOption method.
+            </returns>
+        </member>
+        <member name="P:Step1.SimpleOptionParser.OptionChar">
+            <summary>
+            The character used to identify options.
+            </summary>
+        </member>
+        <member name="P:Step1.SimpleOptionParser.Option">
+            <summary>
+            The most recent option parsed by GetOption.
+            </summary>
+        </member>
+        <member name="P:Step1.SimpleOptionParser.Argument">
+            <summary>
+            The Argument (in any) associated with the most recent option.
+            </summary>
+        </member>
+        <member name="P:Step1.SimpleOptionParser.Error">
+            <summary>
+            Error message generated if GetOpt returns false.
+            </summary>
+        </member>
+        <member name="P:Step1.SimpleOptionParser.Eof">
+            <summary>
+            End of file flag set when all options are exhausted
+            </summary>
+        </member>
+    </members>
+</doc>

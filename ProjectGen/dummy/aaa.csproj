@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7512E1AF-17EA-4A6B-9A93-4C230D048A0D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NSAaa</RootNamespace>
+    <AssemblyName>aaa</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>aaa.xml</DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>.\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>aaa.xml</DocumentationFile>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Label="PhibroProperties">
+    <MSPEIRules>G:\MIS\icts\MSBuild\2010</MSPEIRules>
+    <_BaseAsmFolder>G:\MIS\phibro\shared\assemblies</_BaseAsmFolder>
+    <SharedDir>$(_BaseAsmFolder)\$(Configuration)</SharedDir>
+    <CommonVersion>4.1.0.0</CommonVersion>
+    <AssemblyVersion Condition="'$(AssemblyVersion)'==''">$(CommonVersion)</AssemblyVersion>
+    <AssemblyBundleName Condition="'$(AssemblyBundleName)'==''">$(AssemblyName)</AssemblyBundleName>
+    <CopyAllFiles Condition="'$(CopyAllFiles)'==''">false</CopyAllFiles>
+    <Verbose Condition="'$(Verbose)'==''">false</Verbose>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup Label="None">
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup Label="IDK">
+    <Compile Include="Source\UI\aaaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\UI\aaaForm.Designer.cs">
+      <DependentUpon>aaaForm.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup Label="References">
+    <Reference Include="DevExpress.BonusSkins.v12.2" />
+    <Reference Include="DevExpress.Data.v12.2" />
+    <Reference Include="DevExpress.Utils.v12.2" />
+    <Reference Include="DevExpress.XtraBars.v12.2" />
+    <Reference Include="DevExpress.XtraEditors.v12.2" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup Label="PhibroItems">
+    <BundleToCopy Include="refs\peidb.ref">
+      <BundleName>PEIDBProvider</BundleName>
+      <BundleVersion>$(CommonVersion)</BundleVersion>
+      <HasMultipleItems>false</HasMultipleItems>
+    </BundleToCopy>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSPEIRules)\Phibro.CopyBundle.Targets" />
+  <Import Project="$(MSPEIRules)\Phibro.CopyToShared.Targets" />
+  <Import Project="$(MSPEIRules)\Phibro.LightWeightAssembly.Targets" />
+  <Target Name="BeforeResolveReferences" DependsOnTargets="precreateProps;copyBundles">
+    <CreateItem Include="%(BundleToCopy.BundleName)" AdditionalMetadata="Private=false;HintPath=$(LocalAssemblyFolder)\%(BundleToCopy.BundleName)\%(BundleToCopy.BundleVersion)\%(BundleToCopy.BundleName).dll;Name=%(BundleToCopy.BundleName).dll;" Condition="'%(BundleToCopy.BundleName)'!='' and '%(BundleToCopy.HasMultipleItems)'!='true'">
+      <Output TaskParameter="Include" ItemName="Reference" />
+    </CreateItem>
+  </Target>
+  <Target Name="precreateProps">
+    <CreateProperty Value="%(_OutputPathItem.FullPath)\assemblies" Condition="!HasTrailingSlash('%(_OutputPathItem.FullPath)')">
+      <Output TaskParameter="Value" PropertyName="LocalAssemblyFolder" />
+    </CreateProperty>
+    <CreateProperty Value="%(_OutputPathItem.FullPath)assemblies" Condition="HasTrailingSlash('%(_OutputPathItem.FullPath)')">
+      <Output TaskParameter="Value" PropertyName="LocalAssemblyFolder" />
+    </CreateProperty>
+    <Message Importance="high" Text="LocalAssemblyFolder=$(LocalAssemblyFolder)" Condition="'$(Verbose)'=='true'" />
+  </Target>
+</Project>
