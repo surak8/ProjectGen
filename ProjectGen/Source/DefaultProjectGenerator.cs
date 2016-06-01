@@ -133,9 +133,10 @@ namespace NSprojectgen {
 		}
 
 		static void createAppCfgFile(string filename) {
+			XmlWriterSettings xws;
+
 			if (File.Exists(filename))
 				File.Delete(filename);
-			XmlWriterSettings xws;
 
 			xws = new XmlWriterSettings();
 			xws.Indent = true;
@@ -244,6 +245,7 @@ namespace NSprojectgen {
 
 		static void addCreateProperty(ProjectTargetElement v1, string p, string p_2, string p_3) {
 			var v0 = v1.AddTask("CreateProperty");
+
 			v0.SetParameter("Value", p);
 			if (!string.IsNullOrEmpty(p_2))
 				v0.Condition = p_2;

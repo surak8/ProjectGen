@@ -20,9 +20,6 @@ namespace NSprojectgen {
 			p.Xml.AddImport(@"$(VCTargetsPath)\Microsoft.Cpp.Default.props");
 
 			switch (type) {
-				// Makefile
-				//            case ProjectType.WindowsForm:
-				//              break;
 				case ProjectType.ConsoleApp:
 					typeDesc = "Application";
 					break;

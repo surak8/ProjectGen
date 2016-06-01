@@ -49,15 +49,16 @@ namespace NSprojectgen {
 
 			cdp.GenerateCodeFromNamespace(ns, sw, opts);
 
-			const string COMPANY = "Phibro Trading LLC.";
+			//			const string COMPANY = "Phibro Trading LLC.";
+			string companyName = Properties.Settings.Default.CustomCompany;
 
 			var v2 = new CodeSnippetTypeMember(
 				string.Join("\n",
 					"[assembly:AssemblyTitle(\"" + aName + "\")]",
 					"[assembly:AssemblyProduct(\"" + aName + "\")]",
 					"[assembly:AssemblyDescription(\"description of " + aName + ".\")]",
-					"[assembly:AssemblyCompany(\"" + COMPANY + "\")]",
-					"[assembly:AssemblyCopyright(\"Copyright © " + DateTime.Now.Year.ToString() + ", " + COMPANY + "\")]",
+					"[assembly:AssemblyCompany(\"" + companyName + "\")]",
+					"[assembly:AssemblyCopyright(\"Copyright © " + DateTime.Now.Year.ToString() + ", " + companyName + "\")]",
 					"#if DEBUG",
 					"[assembly:AssemblyConfiguration(\"Debug version\")]",
 					"#else",
@@ -350,7 +351,6 @@ namespace NSprojectgen {
 							ceStatBar,"Ribbon"),
 							ceRibbon),
 
-
 					new CodeAssignStatement (
 						new CodePropertyReferenceExpression(ceThis,"AutoHideRibbon"),
 						new CodePrimitiveExpression(false)),
@@ -479,7 +479,6 @@ namespace NSprojectgen {
 		static CodeTypeMember createLoadMethod(string name, CodeTypeReference ctr) {
 			CodeMemberMethod m = new CodeMemberMethod();
 
-
 			m.Name = name;
 			m.Attributes = 0;
 			m.Parameters.AddRange(
@@ -553,6 +552,8 @@ namespace NSprojectgen {
 			CodeTypeDeclaration ctd;
 			CodeConstructor cc;
 			string formName;
+			CodeMemberMethod m2;
+			CodeMemberMethod m;
 
 			ret.Namespaces.AddRange(new CodeNamespace[] {
 				ns0=new CodeNamespace(),
@@ -584,13 +585,11 @@ namespace NSprojectgen {
 							new CodeMethodReferenceExpression(null, WIN_FORM_INIT))));
 
 			if (devExpress) {
-				CodeMemberMethod m2;
 
 				ctd.Members.Add(createActionMethod(DX_ABOUT_NAME, "ItemClickEventArgs"));
 				ctd.Members.Add(m2 = createActionMethod(DX_EXIT_NAME, "ItemClickEventArgs", false));
 				genAppExitCode(m2);
 			} else {
-				CodeMemberMethod m;
 
 				ctd.Members.Add(m = new CodeMemberMethod());
 				m.Attributes = 0;
@@ -613,7 +612,6 @@ namespace NSprojectgen {
 			CodeVariableReferenceExpression vr = new CodeVariableReferenceExpression("cea");
 			CodeTypeReference ctr = new CodeTypeReference("CancelEventArgs");
 			m.Statements.AddRange(
-
 				new CodeStatement[] {
 					new CodeVariableDeclarationStatement (
 						ctr,vr.VariableName ,
@@ -664,15 +662,11 @@ namespace NSprojectgen {
 				if (devExpress)
 					m.Statements.AddRange(
 						new CodeStatement[] {
-							/*
-							 * DevExpress.UserSkins.BonusSkins.Register();
-							 * DevExpress.Skins.SkinManager.EnableFormSkins();
-							 * */
-						new CodeExpressionStatement(
-							new CodeMethodInvokeExpression (ce1,"Register")),
-						new CodeExpressionStatement(
-							new CodeMethodInvokeExpression (ce2,"EnableFormSkins")),
-					});
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression (ce1,"Register")),
+							new CodeExpressionStatement(
+								new CodeMethodInvokeExpression (ce2,"EnableFormSkins")),
+						});
 				m.Statements.AddRange(
 					new CodeStatement[] {
 						new CodeExpressionStatement(
