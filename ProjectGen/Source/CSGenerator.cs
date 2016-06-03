@@ -5,6 +5,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 
 namespace NSprojectgen {
 	class CSGenerator {
@@ -89,12 +90,19 @@ namespace NSprojectgen {
 				case ProjectType.ClassLibrary:
 					generateLib(pige2, cdp, opts, ns, asmName);
 					break;
+                case ProjectType.XamlApp:
+                    generateXaml(pige2, cdp, opts, ns, asmName);
+                    break;
 				default:
 					throw new InvalidOperationException("unhandled " + type.GetType().Name + ": " + type);
 			}
 		}
 
-		static void generateLib(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts, string ns, string asmName) {
+          static void generateXaml(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts, string ns, string asmName) {
+            Trace.WriteLine("do something for XAML");
+        }
+
+        static void generateLib(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts, string ns, string asmName) {
 			string fname, tmp, relName, className;
 
 			className = asmName.Substring(0, 1).ToUpper() + asmName.Substring(1) + "Class";

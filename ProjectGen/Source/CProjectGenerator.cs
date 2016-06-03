@@ -14,6 +14,7 @@ namespace NSprojectgen {
 			string typeDesc = null;
 
 			p.Xml.DefaultTargets = "Build";
+  //          p.SetProperty("ToolsVersion", "14.0");
 
 			createItemGroup(p, "ProjectConfigurations");
 			createGlobals(ns, type, p, "Globals");
@@ -201,9 +202,12 @@ namespace NSprojectgen {
 		}
 
 		static bool reuseGuid = false;
+        const string FRAMEWORK_4 = "v4.0";
+        const string FRAMEWORK_452 = "v4.5.2";
 		static void createGlobals(string ns, ProjectType type, Project p, string label) {
 			var v2 = p.Xml.CreatePropertyGroupElement();
 			Guid guid;
+            string framework = type == ProjectType.XamlApp ? FRAMEWORK_452 : FRAMEWORK_4;
 
 			v2.Label = label;
 			p.Xml.AppendChild(v2);
@@ -213,7 +217,7 @@ namespace NSprojectgen {
 				guid = new Guid("22662C87-995A-4027-A2A3-B289218B7F62");
 			v2.AddProperty("ProjectGuid", "{" + guid + "}");
 			if (type == ProjectType.WindowsForm) {
-				v2.AddProperty("TargetFrameworkVersion", "v4.0");
+				v2.AddProperty("TargetFrameworkVersion", framework);
 				v2.AddProperty("Keyword", "ManagedCProj");
 			}
 			v2.AddProperty("RootNamespace", string.IsNullOrEmpty(ns) ? "NSNone" : ns);
