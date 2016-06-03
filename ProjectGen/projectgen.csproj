@@ -62,11 +62,16 @@
     <Compile Include="Source\CSGenerator.cs" />
     <Compile Include="Source\DefaultProjectGenerator.cs" />
     <Compile Include="Source\driver.cs" />
+    <Compile Include="Source\interfaces\IXamlFileGenerationData.cs" />
+    <Compile Include="Source\Logger.cs" />
     <Compile Include="Source\ProjectType.cs" />
+    <Compile Include="Source\XamlFileGenerator.cs" />
     <Compile Include="Source\XamlGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
