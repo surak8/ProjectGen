@@ -51,6 +51,7 @@ namespace NSprojectgen {
 										case "c": type = ProjectType.ConsoleApp; break;
 										case "d": type = ProjectType.ClassLibrary; break;
 										case "w": type = ProjectType.WindowsForm; break;
+										case "x": type = ProjectType.XamlApp; break;
 										default: Console.Error.WriteLine("unknown project-type '" + atype + "'!"); break;
 									}
 									break;

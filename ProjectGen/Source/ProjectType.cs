@@ -4,5 +4,6 @@ namespace NSprojectgen {
 		WindowsForm,
 		ConsoleApp,
 		ClassLibrary,
+		XamlApp,
 	}
 }
