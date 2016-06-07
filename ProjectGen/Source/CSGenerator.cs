@@ -3,24 +3,36 @@ using Microsoft.Build.Evaluation;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Diagnostics;
 
 namespace NSprojectgen {
 	class CSGenerator {
+		#region constants
+		const string FN_RIB_CTRL = "ribbonControl";
+		const string FN_RIB_PAGE = "ribbonPage";
+		const string FN_RIB_PAGE_GRP = "ribbonPageGroup";
+		const string FN_RIB_STAT_BAR = "ribbonStatusBar";
+		const string FN_BAR = "bbExit";
+		const string FN_BAR2 = "bbAbout";
+		const string KEY_MENU_STRIP = "ms1";
+		const string KEY_FILE_ITEM = "tsmiFile";
+		const string KEY_FILE_ITEM_EXIT = "tsmiFileExit";
+		const string REGION_NAME = "Windows Form Designer generated code";
+		const string DX_EXIT_NAME = "exitApp";
+		const string DX_ABOUT_NAME = "showAbout";
+		const string METHOD_NAME_EXIT_CLICK = "exitClick";
+		const string WIN_FORM_INIT = "InitializeComponent";
+		#endregion
 
-#if false
-        internal static void generateFiles(Project p,ProjectItemGroupElement pige2,string aFile,string asmName,string szVersion,ProjectType type,string ns) {
-
-            using (CodeDomProvider cdp = new CSharpCodeProvider()) {
-                CodeGeneratorOptions opts = new CodeGeneratorOptions();
-                createAsmInfoFile(aFile,asmName,szVersion,cdp,opts);
-                generateMainFiles(p,asmName,type,pige2,cdp,opts,ns);
-            }
-        }
-#endif
-
+		#region read-only fields
+		static readonly CodeExpression ceThis = new CodeThisReferenceExpression();
+		static readonly CodeExpression ceBase = new CodeBaseReferenceExpression();
+		static readonly CodeExpression ceNull = new CodePrimitiveExpression();
+		static readonly CodeTypeReference ctrEA = new CodeTypeReference("EventArgs");
+		#endregion
+		    
 		public static void createAsmInfoFile(string aFile, string aName, string szVersion, CodeDomProvider cdp, CodeGeneratorOptions opts) {
 			string tmp, dir;
 
@@ -50,7 +62,6 @@ namespace NSprojectgen {
 
 			cdp.GenerateCodeFromNamespace(ns, sw, opts);
 
-			//			const string COMPANY = "Phibro Trading LLC.";
 			string companyName = Properties.Settings.Default.CustomCompany;
 
 			var v2 = new CodeSnippetTypeMember(
@@ -61,9 +72,9 @@ namespace NSprojectgen {
 					"[assembly:AssemblyCompany(\"" + companyName + "\")]",
 					"[assembly:AssemblyCopyright(\"Copyright © " + DateTime.Now.Year.ToString() + ", " + companyName + "\")]",
 					"#if DEBUG",
-					"[assembly:AssemblyConfiguration(\"Debug version\")]",
+					"[assembly:AssemblyConfiguration(\"Debug assemblyVersion\")]",
 					"#else",
-					"[assembly:AssemblyConfiguration(\"Release version\")]",
+					"[assembly:AssemblyConfiguration(\"Release assemblyVersion\")]",
 					"#endif",
 					"[assembly:ComVisible(false)]",
 					null,
@@ -79,39 +90,31 @@ namespace NSprojectgen {
 			return v;
 		}
 
-		internal static void generateMainFiles(Project p, string asmName, ProjectType type, ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts, string ns, bool devExpress) {
-			switch (type) {
-				case ProjectType.WindowsForm:
-					generateForms(pige2, cdp, opts, ns, asmName, devExpress);
-					break;
-				case ProjectType.ConsoleApp:
-					generateMain(pige2, cdp, opts, ns, asmName);
-					break;
-				case ProjectType.ClassLibrary:
-					generateLib(pige2, cdp, opts, ns, asmName);
-					break;
-                case ProjectType.XamlApp:
-                    generateXaml(pige2, cdp, opts, ns, asmName);
-                    break;
+		internal static void generateMainFiles(Project p, PGOptions opts1, ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2) {
+			switch (opts1.projectType) {
+				case ProjectType.WindowsForm: generateForms(pige2, cdp, opts2, opts1); break;
+				case ProjectType.ConsoleApp: generateMain(pige2, cdp, opts2, opts1); break;
+				case ProjectType.ClassLibrary: generateLib(pige2, cdp, opts2, opts1); break;
+				case ProjectType.XamlApp: generateXaml(pige2, cdp, opts2, opts1); break;
 				default:
-					throw new InvalidOperationException("unhandled " + type.GetType().Name + ": " + type);
+					throw new InvalidOperationException("unhandled " + opts1.projectType.GetType().Name + ": " + opts1.projectType);
 			}
 		}
 
-          static void generateXaml(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts, string ns, string asmName) {
-            Trace.WriteLine("do something for XAML");
-        }
+		static void generateXaml(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2, PGOptions opts1) {
+			Trace.WriteLine("do something for XAML");
+		}
 
-        static void generateLib(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts, string ns, string asmName) {
+		static void generateLib(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2, PGOptions opts1) {
 			string fname, tmp, relName, className;
 
-			className = asmName.Substring(0, 1).ToUpper() + asmName.Substring(1) + "Class";
+			className = opts1.assemblyName.Substring(0, 1).ToUpper() + opts1.assemblyName.Substring(1) + "Class";
 			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\" + className + "." + cdp.FileExtension);
 			if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
 				Directory.CreateDirectory(tmp);
 
 			using (TextWriter tw = new StreamWriter(fname)) {
-				cdp.GenerateCodeFromCompileUnit(createClass(ns, className), tw, opts);
+				cdp.GenerateCodeFromCompileUnit(createClass(opts1.projectNamespace, className), tw, opts2);
 			}
 			if (pige2 != null)
 				pige2.AddItem("Compile", relName);
@@ -131,21 +134,22 @@ namespace NSprojectgen {
 			return ret;
 		}
 
-		static void generateForms(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts, string ns, string asmName, bool devExpress) {
+		static void generateForms(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2, PGOptions opts1) {
 			string fname, tmp, relName, relName2;
+			string asmName = opts1.assemblyName;
 
 			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\UI\\" + asmName + "Form." + cdp.FileExtension);
 			if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
 				Directory.CreateDirectory(tmp);
 
 			using (TextWriter tw = new StreamWriter(fname)) {
-				cdp.GenerateCodeFromCompileUnit(createCCUForm(ns, asmName, devExpress), tw, opts);
+				cdp.GenerateCodeFromCompileUnit(createCCUForm(opts1.projectNamespace, asmName, opts1.doDevExpress), tw, opts2);
 			}
 
 			fname = Path.Combine(Directory.GetCurrentDirectory(), relName2 = "Source\\UI\\" + asmName + "Form.Designer." + cdp.FileExtension);
 
 			using (TextWriter tw = new StreamWriter(fname)) {
-				cdp.GenerateCodeFromCompileUnit(createCCUDesigner(ns, asmName, devExpress), tw, opts);
+				cdp.GenerateCodeFromCompileUnit(createCCUDesigner(opts1.projectNamespace, asmName, opts1.doDevExpress), tw, opts2);
 			}
 			if (pige2 != null) {
 				pige2.AddItem("Compile", relName);
@@ -165,15 +169,8 @@ namespace NSprojectgen {
 				nsNamed=new CodeNamespace(ns)
 			});
 			ns0.Imports.Add(new CodeNamespaceImport("System"));
-
 			nsNamed.Types.Add(ctd = new CodeTypeDeclaration(aName + "Driver"));
-#if false
-            ctd.Members.Add(m=new CodeEntryPointMethod());
-            m.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(new CodeTypeReference(typeof(string)),1),"args"));
-#else
 			m = addMain(ctd);
-
-#endif
 			return ret;
 		}
 
@@ -240,22 +237,6 @@ namespace NSprojectgen {
 
 			return ret;
 		}
-
-		const string FN_RIB_CTRL = "ribbonControl";
-		const string FN_RIB_PAGE = "ribbonPage";
-		const string FN_RIB_PAGE_GRP = "ribbonPageGroup";
-		const string FN_RIB_STAT_BAR = "ribbonStatusBar";
-		const string FN_BAR = "bbExit";
-		const string FN_BAR2 = "bbAbout";
-
-		const string KEY_MENU_STRIP = "ms1";
-		const string KEY_FILE_ITEM = "tsmiFile";
-		const string KEY_FILE_ITEM_EXIT = "tsmiFileExit";
-		static readonly CodeExpression ceThis = new CodeThisReferenceExpression();
-		static readonly CodeExpression ceBase = new CodeBaseReferenceExpression();
-		static readonly CodeExpression ceNull = new CodePrimitiveExpression();
-
-		const string REGION_NAME = "Windows Form Designer generated code";
 
 		static CodeMemberMethod addInitComp(CodeTypeDeclaration ctd, bool devExpress) {
 			CodeMemberMethod m;
@@ -396,9 +377,6 @@ namespace NSprojectgen {
 			return m2;
 		}
 
-		const string DX_EXIT_NAME = "exitApp";
-		const string DX_ABOUT_NAME = "showAbout";
-
 		static void normalInitComp(CodeTypeDeclaration ctd, CodeMemberMethod m) {
 			CodeTypeReference ctrMenu, ctrFile, ctrFileExit;
 			CodeExpression ceMenu, ceFile, ceTmp, ceFileExit;
@@ -497,8 +475,6 @@ namespace NSprojectgen {
 			return m;
 		}
 
-		const string METHOD_NAME_EXIT_CLICK = "exitClick";
-
 		static CodeFieldReferenceExpression findField(CodeTypeDeclaration ctd, string fldName, out CodeTypeReference tr) {
 			CodeMemberField f;
 
@@ -549,8 +525,6 @@ namespace NSprojectgen {
 				);
 			return m;
 		}
-
-		const string WIN_FORM_INIT = "InitializeComponent";
 
 		static readonly CodeStatement csBlank = new CodeSnippetStatement();
 
@@ -614,8 +588,6 @@ namespace NSprojectgen {
 			return ret;
 		}
 
-		static readonly CodeTypeReference ctrEA = new CodeTypeReference("EventArgs");
-
 		static void genAppExitCode(CodeMemberMethod m) {
 			CodeVariableReferenceExpression vr = new CodeVariableReferenceExpression("cea");
 			CodeTypeReference ctr = new CodeTypeReference("CancelEventArgs");
@@ -645,7 +617,7 @@ namespace NSprojectgen {
 
 		static CodeMemberMethod addMain(CodeTypeDeclaration ctd, bool isForm, string formName, bool devExpress) {
 			CodeMemberMethod m;
-			CodeExpression e;
+			CodeExpression e, ce1, ce2;
 
 			ctd.Members.Add(m = new CodeMemberMethod());
 			m.Name = "Main";
@@ -655,17 +627,9 @@ namespace NSprojectgen {
 			if (isForm) {
 				if (string.IsNullOrEmpty(formName))
 					throw new ArgumentNullException("formName", "form-name is null!");
-				e = new CodeTypeReferenceExpression("System.Windows.Forms.Application");
 				e = new CodeTypeReferenceExpression("Application");
-				CodeExpression ce1, ce2;
-
-#if true
 				ce1 = new CodeTypeReferenceExpression("BonusSkins");
 				ce2 = new CodeTypeReferenceExpression("SkinManager");
-#else
-				ce1 = new CodeTypeReferenceExpression("DevExpress.UserSkins.BonusSkins");
-				ce2 = new CodeTypeReferenceExpression("DevExpress.Skins.SkinManager");
-#endif
 
 				if (devExpress)
 					m.Statements.AddRange(
@@ -690,7 +654,7 @@ namespace NSprojectgen {
 			return m;
 		}
 
-		static void generateMain(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts, string ns, string aName) {
+		static void generateMain(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2, PGOptions opts1) {
 			string fname, tmp, relName;
 
 			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\adriver." + cdp.FileExtension);
@@ -698,7 +662,7 @@ namespace NSprojectgen {
 				Directory.CreateDirectory(tmp);
 
 			using (TextWriter tw = new StreamWriter(fname)) {
-				cdp.GenerateCodeFromCompileUnit(createCCUMain(ns, aName, false), tw, opts);
+				cdp.GenerateCodeFromCompileUnit(createCCUMain(opts1.projectNamespace, opts1.assemblyName, false), tw, opts2);
 			}
 			pige2.AddItem("Compile", relName);
 		}

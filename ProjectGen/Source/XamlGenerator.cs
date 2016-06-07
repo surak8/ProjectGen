@@ -1,126 +1,152 @@
-using System;
+using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
+using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
-using Microsoft.Build.Construction;
-using Microsoft.Build.Evaluation;
 
 namespace NSprojectgen {
-    static class XamlGenerator {
-        internal static void generateFiles(Project p, string asmName, string ns, ProjectItemGroupElement pige, CodeDomProvider cdp, CodeGeneratorOptions opts) {
-            /*
-             * need:
-             * App.xaml
-             * MainWindow.xaml
-             * App.xaml.cs
-             * MainWindow.xaml.cs
-             * */
-            Dictionary<string, string> tmp = new Dictionary<string, string>();
+	static class XamlGenerator {
+		const string WIN_NAME = "MainWindow";
 
-            tmp.Add("Generator", "MSBuild:Compile");
-            tmp.Add("SubType", "Designer");
-            pige.AddItem("ApplicationDefinition", "App.xaml", tmp);
-            pige.AddItem("Page", "MainWindow.xaml", tmp);
+		internal static void generateFiles(Project p, PGOptions opts1, ProjectItemGroupElement pige, CodeDomProvider cdp, PGOptions opts2) {
+			Dictionary<string, string> tmp = new Dictionary<string, string>();
+			WinDataProvider wdp = new WinDataProvider(WIN_NAME, opts1.projectNamespace, opts2.xamlType == XamlWindowType.RegularWindow);
+			AppDataProvider apd = new AppDataProvider(wdp.fileName, opts1.projectNamespace);
+			string tmp2;
 
-            tmp.Clear();
-            tmp.Add("DependentUpon", "App.xaml");
-            tmp.Add("SubType", "Code");
-            pige.AddItem("Compile", "App.xaml.cs", tmp);
+			XamlFileGenerator.generateFile(apd, false);
+			XamlFileGenerator.generateFile(wdp, true);
 
-            tmp.Clear();
-            tmp.Add("DependentUpon", "MainWindow.xaml");
-            tmp.Add("SubType", "Code");
-            pige.AddItem("Compile", "MainWindow.xaml.cs", tmp);
+			if (!string.IsNullOrEmpty(tmp2 = wdp.viewModelName) && System.IO.File.Exists(tmp2)) {
+				pige.AddItem("Compile", tmp2);
+				Debug.WriteLine("added: " + tmp2);
+			}
 
-            WinDataProvider wdp = new WinDataProvider("MainWindow", ns);
+			tmp.Add("Generator", "MSBuild:Compile");
+			tmp.Add("SubType", "Designer");
+			pige.AddItem("ApplicationDefinition", apd.xamlName, tmp);
+			pige.AddItem("Page", wdp.xamlName, tmp);
 
-            AppDataProvider apd = new AppDataProvider(wdp.fileName, ns);
-            XamlFileGenerator.generateFile(apd, false);
-            XamlFileGenerator.generateFile(wdp, true);
-            //        Debug.Print("here");
-            string tmp2;
-            if (!string.IsNullOrEmpty(tmp2 = wdp.viewModelName) && System.IO.File.Exists(tmp2))
-                pige.AddItem("Compile", tmp2);
+			tmp.Clear();
+			tmp.Add("DependentUpon", apd.xamlName);
+			tmp.Add("SubType", "Code");
+			pige.AddItem("Compile", apd.codeBehindName, tmp);
+			Debug.WriteLine("added: " + apd.codeBehindName);
 
-        }
-    }
+			tmp.Clear();
+			tmp.Add("DependentUpon", wdp.xamlName);
+			tmp.Add("SubType", "Code");
+			pige.AddItem("Compile", wdp.codeBehindName, tmp);
+			Debug.WriteLine("added: " + wdp.codeBehindName);
 
-    class WinDataProvider : IXamlFileGenerationData {
-        public WinDataProvider(string v, string nameSpace) {
-            this.elementName = "Window";
-            this.fileName = v;
-            this.nameSpace = nameSpace;
-        }
-        #region IXamlFileGenerationData implementation
-        #region properties
-        public string elementName { get; private set; }
-        public string fileName { get; private set; }
-        public string nameSpace { get; private set; }
+			if (!wdp.isRegularWindow) {
+				pige.AddItem("Compile", wdp.homePage);
+				Debug.WriteLine("added: " + wdp.homePage);
 
-        public string codeBehindName { get; set; }
-        public string viewModelName { get; set; }
-        public string xamlName { get; set; }
-        #endregion
+			}
+		}
+	}
 
-        #region methods
-        void IXamlFileGenerationData.populateElement(XmlWriter xw) {
-            xw.WriteStartElement("Grid");
-            xw.WriteEndElement();
+	class WinDataProvider : IXamlFileGenerationData {
+		public string homePage { get; private set; }
 
-        }
+		public WinDataProvider(string v, string nameSpace, bool isRegularWindow) {
+			this.elementName = isRegularWindow ? "Window" : "NavigationWindow";
+			this.fileName = v;
+			this.nameSpace = nameSpace;
+			this.isRegularWindow = isRegularWindow;
+			homePage = isRegularWindow ? string.Empty : "Home.xaml";
+		}
 
-        void IXamlFileGenerationData.populateElementAttributes(XmlWriter xw) {
-            xw.WriteAttributeString("Name", XamlFileGenerator.NS_X, "window1");
-            xw.WriteAttributeString("Class", XamlFileGenerator.NS_X, this.nameSpace + "." + this.elementName);
-            xw.WriteAttributeString("Title", "MainWindow");
-            xw.WriteAttributeString("Width", "350");
-            xw.WriteAttributeString("Height", "525");
+		internal bool isRegularWindow { get; private set; }
 
-        }
+		#region IXamlFileGenerationData implementation
+		#region properties
+		public string elementName { get; private set; }
+		public string fileName { get; private set; }
+		public string nameSpace { get; private set; }
 
-        #endregion
-        #endregion
-    }
+		public string codeBehindName { get; set; }
+		public string viewModelName { get; set; }
+		public string xamlName { get; set; }
+		#endregion
 
-    class AppDataProvider : IXamlFileGenerationData {
-        #region ctor
-        public AppDataProvider(string winClass, string nameSpace) {
-            windowClassName = winClass;
-            elementName = "Application";
-            fileName = "App";
-            //       nameSpace = "NSTest";
-            this.nameSpace = nameSpace;
-        }
-        #endregion
+		#region methods
+		void IXamlFileGenerationData.populateElement(XmlWriter xw) {
+			if (this.isRegularWindow) {
+				xw.WriteStartElement("Grid");
+				xw.WriteEndElement();
+			}
+		}
 
-        #region properties
-        public string windowClassName { get; private set; }
-        #endregion
+		void IXamlFileGenerationData.populateElementAttributes(XmlWriter xw) {
+			xw.WriteAttributeString("Name", XamlFileGenerator.NS_X, "window1");
+			xw.WriteAttributeString("Class", XamlFileGenerator.NS_X, this.nameSpace + "." + this.fileName);
+			xw.WriteAttributeString("Title", "MainWindow");
+			xw.WriteAttributeString("Width", "350");
+			xw.WriteAttributeString("Height", "525");
+			if (!this.isRegularWindow) {
+				xw.WriteAttributeString("Source",this.homePage);
+			}
+		}
 
-        #region IXamlFileGenerationData implementation
-        #region properties
-        public string elementName { get; private set; }
-        public string fileName { get; private set; }
-        public string nameSpace { get; private set; }
+		public void addImports(CodeNamespace ns) {
+			CodeNamespaceImport anImport;
+			if (this.isRegularWindow)
+				anImport = new CodeNamespaceImport("System.Windows");
+			else
+				anImport = new CodeNamespaceImport("System.Windows.Navigation");
+			ns.Imports.Add(anImport);
+		}
+		#endregion
+		#endregion
+	}
 
-        string IXamlFileGenerationData.codeBehindName { get; set; }
-        string IXamlFileGenerationData.viewModelName { get; set; }
-        string IXamlFileGenerationData.xamlName { get; set; }
-        #endregion
+	class AppDataProvider : IXamlFileGenerationData {
+		#region ctor
+		public AppDataProvider(string winClass, string nameSpace) {
+			windowClassName = winClass;
+			elementName = "Application";
+			fileName = "App";
+			//       nameSpace = "NSTest";
+			this.nameSpace = nameSpace;
+		}
+		#endregion
 
-        #region methods
-        void IXamlFileGenerationData.populateElement(XmlWriter xw) {
-            xw.WriteStartElement(this.elementName + ".Resources");
-            xw.WriteFullEndElement();
-        }
+		#region properties
+		public string windowClassName { get; private set; }
+		#endregion
 
-        void IXamlFileGenerationData.populateElementAttributes(XmlWriter xw) {
-            xw.WriteAttributeString("Class", XamlFileGenerator.NS_X, this.nameSpace + "." + this.elementName);
-            xw.WriteAttributeString("StartupUri", this.windowClassName + ".xaml");
-        }
-        #endregion        
-        #endregion
-    }
+		#region IXamlFileGenerationData implementation
+		#region properties
+		public string elementName { get; private set; }
+		public string fileName { get; private set; }
+		public string nameSpace { get; private set; }
+
+		public string codeBehindName { get; set; }
+		public string viewModelName { get; set; }
+		public string xamlName { get; set; }
+		#endregion
+
+		#region methods
+		void IXamlFileGenerationData.populateElement(XmlWriter xw) {
+			xw.WriteStartElement(this.elementName + ".Resources");
+			xw.WriteFullEndElement();
+		}
+
+		void IXamlFileGenerationData.populateElementAttributes(XmlWriter xw) {
+			xw.WriteAttributeString("Class", XamlFileGenerator.NS_X, this.nameSpace + "." + this.elementName);
+			xw.WriteAttributeString("StartupUri", this.windowClassName + ".xaml");
+		}
+
+		void IXamlFileGenerationData.addImports(CodeNamespace ns) {
+			Logger.log(MethodBase.GetCurrentMethod());
+
+		}
+		#endregion
+		#endregion
+	}
 }

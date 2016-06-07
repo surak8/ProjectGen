@@ -5,30 +5,41 @@ using System;
 namespace NSprojectgen {
 	class CProjectGenerator {
 
+		#region delegates
+		delegate void Blah(ProjectRootElement root, ProjectImportGroupElement pige);
+		delegate void Blah2(ProjectPropertyGroupElement ppge);
+		delegate void Blah3(ProjectItemDefinitionElement pide, bool isDebug);
+		delegate void Blah4(ProjectItemGroupElement pige);
+		#endregion
+
+		#region constants
 		const string DEBUG = "Debug";
 		const string RELEASE = "Release";
 		const string PLATFORM = "Win32";
+		const string COMPILER = "ClCompile";
+		const string LINKER = "Link";
+		const string FRAMEWORK_4 = "v4.0";
+		const string FRAMEWORK_452 = "v4.5.2";
+		#endregion
+
+		#region fields
+		static bool reuseGuid = false;
+		#endregion
 
 		internal static void generate(string filename, string version, string asmName, string ns, ProjectType type) {
 			Project p = new Project();
 			string typeDesc = null;
 
 			p.Xml.DefaultTargets = "Build";
-  //          p.SetProperty("ToolsVersion", "14.0");
-
 			createItemGroup(p, "ProjectConfigurations");
 			createGlobals(ns, type, p, "Globals");
 			p.Xml.AddImport(@"$(VCTargetsPath)\Microsoft.Cpp.Default.props");
 
 			switch (type) {
-				case ProjectType.ConsoleApp:
-					typeDesc = "Application";
-					break;
-				case ProjectType.ClassLibrary:
-					typeDesc = "DynamicLibrary";
-					break;
+				case ProjectType.ConsoleApp: typeDesc = "Application"; break;
+				case ProjectType.ClassLibrary: typeDesc = "DynamicLibrary"; break;
 				default:
-					throw new InvalidOperationException("unhandled type: " + type);
+					throw new InvalidOperationException("unhandled projectType: " + type);
 			}
 			createCfgProp(p.Xml, typeDesc, true);
 			createCfgProp(p.Xml, typeDesc, false);
@@ -41,15 +52,12 @@ namespace NSprojectgen {
 			const string C_TARGET_RULES = @"$(VCTargetsPath)\Microsoft.Cpp.targets";
 			var v99 = p.Xml.CreateImportElement(C_TARGET_RULES);
 			p.Xml.AppendChild(v99);
-
 			p.Save(filename);
 		}
 
 		static ProjectItemGroupElement addItemGroup(ProjectRootElement root, Blah4 blah4) {
 			return addItemGroup(root, null, null, blah4);
 		}
-
-		delegate void Blah4(ProjectItemGroupElement pige);
 
 		static void fakeC(ProjectItemGroupElement pige) {
 			pige.AddItem("ClCompile", "fake.c");
@@ -89,8 +97,6 @@ namespace NSprojectgen {
 			createItemDef(root, false);
 		}
 
-		const string COMPILER = "ClCompile";
-		const string LINKER = "Link";
 		static void createItemDef(ProjectRootElement root, bool p) {
 			var avar = root.CreateItemDefinitionGroupElement();
 			root.AppendChild(avar);
@@ -98,8 +104,6 @@ namespace NSprojectgen {
 			addItemDef(avar, COMPILER, p, new Blah3(populateCompiler));
 			addItemDef(avar, LINKER, p, new Blah3(populateLinker));
 		}
-
-		delegate void Blah3(ProjectItemDefinitionElement pide, bool isDebug);
 
 		static void addItemDef(ProjectItemDefinitionGroupElement pidge, string toolName, bool isDebug, Blah3 blah3) {
 			var avar = pidge.AddItemDefinition(toolName);
@@ -126,8 +130,6 @@ namespace NSprojectgen {
 			}
 		}
 
-		delegate void Blah2(ProjectPropertyGroupElement ppge);
-
 		static void b2(ProjectPropertyGroupElement ppge) {
 			//            ppge.AddProperty("OutDir", "$(SolutionDir)");
 			//            ppge.AddProperty("LinkIncremental", "false");
@@ -140,6 +142,10 @@ namespace NSprojectgen {
 				avar.Condition = condition;
 			if (blah2 != null)
 				blah2(avar);
+		}
+
+		internal static void generate(PGOptions opts) {
+			throw new NotImplementedException();
 		}
 
 		static ProjectPropertyGroupElement addPropertyGroup(ProjectRootElement root, string p) {
@@ -155,8 +161,6 @@ namespace NSprojectgen {
 			addImportGroup(root, "PropertySheets", makeCfgCondition(DEBUG, PLATFORM), new Blah(b1));
 			addImportGroup(root, "PropertySheets", makeCfgCondition(RELEASE, PLATFORM), new Blah(b1));
 		}
-
-		delegate void Blah(ProjectRootElement root, ProjectImportGroupElement pige);
 
 		static void b1(ProjectRootElement root, ProjectImportGroupElement pige) {
 			const string FILE = @"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props";
@@ -201,9 +205,6 @@ namespace NSprojectgen {
 			avar.AddProperty("CharacterSet", "MultiByte");
 		}
 
-		static bool reuseGuid = false;
-        const string FRAMEWORK_4 = "v4.0";
-        const string FRAMEWORK_452 = "v4.5.2";
 		static void createGlobals(string ns, ProjectType type, Project p, string label) {
 			var v2 = p.Xml.CreatePropertyGroupElement();
 			Guid guid;

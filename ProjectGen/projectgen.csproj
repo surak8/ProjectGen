@@ -64,6 +64,7 @@
     <Compile Include="Source\driver.cs" />
     <Compile Include="Source\interfaces\IXamlFileGenerationData.cs" />
     <Compile Include="Source\Logger.cs" />
+    <Compile Include="Source\PGOptions.cs" />
     <Compile Include="Source\ProjectType.cs" />
     <Compile Include="Source\XamlFileGenerator.cs" />
     <Compile Include="Source\XamlGenerator.cs" />

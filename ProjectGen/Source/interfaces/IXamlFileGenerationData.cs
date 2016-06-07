@@ -5,7 +5,7 @@ namespace NSprojectgen {
     public interface IXamlFileGenerationData {
         /// <summary>The element-name of this class</summary>
         string elementName { get; }
-        /// <summary>The base of the filename for this class.</summary>
+        /// <summary>The base of the projectFileName for this class.</summary>
         string fileName { get; }
         /// <summary>The namespace for this class.</summary>
         string nameSpace { get; }
@@ -15,6 +15,11 @@ namespace NSprojectgen {
         string codeBehindName { get; set; }
         /// <summary>read-write name of the view-model file.</summary>
         string viewModelName { get; set; }
+
+
+		/// <summary>any imports required to support this class.</summary>
+		/// <param name="ns"></param>
+		void addImports(System.CodeDom.CodeNamespace ns);
 
         /// <summary>Add object-specific attributes to this XAML object.</summary>
         /// <param name="xw"></param>

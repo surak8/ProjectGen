@@ -6,4 +6,4 @@ namespace NSprojectgen {
 		ClassLibrary,
 		XamlApp,
 	}
-}   
+}
