@@ -8,6 +8,7 @@ using System.Xml;
 using Microsoft.CSharp;
 
 // -f WpfApplication1 -tx -xn -g -n WpfApplication1 -xf Page0 -xf Page1 -xf Page2
+// -f SnertPopulator -n NSSnertPop -g -tx -xn -xf AddRange -xf DeleteRange -xf ModifyRange -xf Allocate -xf CreateJob -xf MaintainData 
 
 namespace NSprojectgen {
     /// <summary></summary>
@@ -153,7 +154,10 @@ namespace NSprojectgen {
                 f.Attributes = 0;
                 ctd.Members.Add(cc = new CodeConstructor());
                 cc.Attributes = MemberAttributes.Public;
-                cc.Statements.Add(new CodeAssignStatement(fr, new CodeObjectCreateExpression(modelName)));
+                cc.Statements.Add(
+                    new CodeAssignStatement(
+                        new CodePropertyReferenceExpression(ceThis, "DataContext"),
+                        new CodeBinaryOperatorExpression(fr, CodeBinaryOperatorType.Assign, new CodeObjectCreateExpression(modelName))));
                 cc.Statements.Add(
                     new CodeExpressionStatement(
                         new CodeMethodInvokeExpression(null, "InitializeComponent", new CodeExpression[0])));
