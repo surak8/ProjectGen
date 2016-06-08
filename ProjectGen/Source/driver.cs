@@ -106,7 +106,7 @@ namespace NSprojectgen {
 		static void showUserHelp(TextWriter tw, Assembly a) {
 			tw.WriteLine("usage:");
 			tw.WriteLine("\t" + Path.GetFileNameWithoutExtension(a.Location) +
-				": -[f projectFileName] -[n namespace] -[v assemblyVersion] -[t c/d/w] [-Dgps] [-x [n/w]]\n");
+				": -[f projectFileName] -[n namespace] -[v assemblyVersion] -[t c/d/w] [-Dgps] [-x [n/w]] [-xf page ...]\n");
 			tw.WriteLine("-C\tgenerate C++ project.");
 			tw.WriteLine("-D\tgenerate DevExpress project.");
 			tw.WriteLine("-g\tgenerate code.");

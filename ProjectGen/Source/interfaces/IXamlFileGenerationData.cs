@@ -1,3 +1,4 @@
+using System.CodeDom;
 using System.Xml;
 
 namespace NSprojectgen {
@@ -19,10 +20,9 @@ namespace NSprojectgen {
 		/// <summary>blah</summary>
 		bool generateViewModel { get; }
 
-
 		/// <summary>any imports required to support this class.</summary>
 		/// <param name="ns"></param>
-		void addImports(System.CodeDom.CodeNamespace ns);
+		void addImports(CodeNamespace ns);
 
         /// <summary>Add object-specific attributes to this XAML object.</summary>
         /// <param name="xw"></param>
@@ -31,5 +31,17 @@ namespace NSprojectgen {
         /// <summary>Add content to this element.</summary>
         /// <param name="xw"></param>
         void populateElement(XmlWriter xw);
+
+        /// <summary>Generate additional code, if desired.</summary>
+        /// <param name="ns"></param>
+        /// <param name="ctd"></param>
+        /// <param name="cc"></param>
+        void generateCode(CodeNamespace ns, CodeTypeDeclaration ctd, CodeConstructor cc);
+
+        /// <summary>Generate cide for the view-model, if desired.</summary>
+        /// <param name="ns"></param>
+        /// <param name="ctd"></param>
+        void generateModelCode(CodeNamespace ns, CodeTypeDeclaration ctd);
+
     }
 }
