@@ -54,6 +54,9 @@ namespace NSprojectgen {
 									if (len > 2) atype = anArg.Substring(2).Trim();
 									else { atype = args[i + 1];i++; }
 									switch (atype) {
+										case "f":
+											if (len > 3) { atype = anArg.Substring(2).Trim(); opts.addXmlPage(atype); } else { opts.addXmlPage(atype = args[i + 1]); i++; }
+											break;
 										case "n": opts.xamlType = XamlWindowType.NavigationWindow; break;
 										case "w": opts.xamlType = XamlWindowType.RegularWindow; break;
 										default: Console.Error.WriteLine("unknown xaml-type '" + atype + "'!"); opts.xamlType = XamlWindowType.RegularWindow; break;

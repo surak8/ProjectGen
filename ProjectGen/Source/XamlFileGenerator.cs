@@ -47,16 +47,10 @@ namespace NSprojectgen {
 		}
 		#endregion
 
-		/// <summary></summary>
-		/// <param name="ixfgd"></param>
-		public static void generateFile(IXamlFileGenerationData ixfgd) {
-			generateFile(ixfgd, false);
-		}
-
 		/// <summary>do it.</summary>
 		/// <param name="ixfgd"></param>
-		/// <param name="generateViewModel"></param>
-		public static void generateFile(IXamlFileGenerationData ixfgd, bool generateViewModel) {
+		//		public static void generateFile(IXamlFileGenerationData ixfgd, bool generateViewModel) {
+		public static void generateFile(IXamlFileGenerationData ixfgd) {
 			StringBuilder sb;
 			CodeDomProvider cdp = new CSharpCodeProvider();
 			CodeGeneratorOptions opts;
@@ -95,8 +89,8 @@ namespace NSprojectgen {
 			ixfgd.codeBehindName = fname + ".xaml." + cdp.FileExtension;
 			modelName = fname + "ViewModel";
 			ixfgd.viewModelName = modelName + "." + cdp.FileExtension;
-			createMainFile(ixfgd.codeBehindName, ns, fname, ename, cdp, modelName, opts, generateViewModel, ixfgd);
-			if (generateViewModel)
+			createMainFile(ixfgd.codeBehindName, ns, fname, ename, cdp, modelName, opts, ixfgd.generateViewModel, ixfgd);
+			if (ixfgd.generateViewModel)
 				createModelfile(ixfgd.viewModelName, ns, modelName, cdp, opts);
 		}
 

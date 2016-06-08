@@ -16,6 +16,9 @@ namespace NSprojectgen {
         /// <summary>read-write name of the view-model file.</summary>
         string viewModelName { get; set; }
 
+		/// <summary>blah</summary>
+		bool generateViewModel { get; }
+
 
 		/// <summary>any imports required to support this class.</summary>
 		/// <param name="ns"></param>

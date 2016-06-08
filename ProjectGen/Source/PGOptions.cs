@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace NSprojectgen {
 	class PGOptions {
@@ -9,6 +10,7 @@ namespace NSprojectgen {
 
 		#region fields
 		bool explicitNamespace;
+		readonly List<string> _xamlPages = new List<string>();
 		#endregion
 
 		#region ctor
@@ -37,6 +39,7 @@ namespace NSprojectgen {
 		public XamlWindowType xamlType { get; set; }
 
 		#endregion
+		public List<string> xamlPages { get { return _xamlPages; } }
 
 		#region methods
 		internal void calculateNamespace() {
@@ -47,6 +50,12 @@ namespace NSprojectgen {
 		internal void setNamespace(string v) {
 			projectNamespace = v;
 			explicitNamespace = true;
+		}
+
+		internal void addXmlPage(string v) {
+			if (string.IsNullOrEmpty(v))
+				throw new ArgumentNullException("v", "invalid XAML page-name.");
+					this._xamlPages.Add(v);
 		}
 
 		#endregion

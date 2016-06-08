@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
     <DocumentationFile>projectgen.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -58,14 +58,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Source\AppDataProvider.cs" />
     <Compile Include="Source\CProjectGenerator.cs" />
     <Compile Include="Source\CSGenerator.cs" />
     <Compile Include="Source\DefaultProjectGenerator.cs" />
     <Compile Include="Source\driver.cs" />
+    <Compile Include="Source\GeneralPage.cs" />
+    <Compile Include="Source\HomeDataProvider.cs" />
     <Compile Include="Source\interfaces\IXamlFileGenerationData.cs" />
     <Compile Include="Source\Logger.cs" />
     <Compile Include="Source\PGOptions.cs" />
     <Compile Include="Source\ProjectType.cs" />
+    <Compile Include="Source\WinDataProvider.cs" />
     <Compile Include="Source\XamlFileGenerator.cs" />
     <Compile Include="Source\XamlGenerator.cs" />
   </ItemGroup>
