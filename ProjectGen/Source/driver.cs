@@ -18,8 +18,13 @@ namespace NSprojectgen {
 			bool fixNS = false;
 			bool showHelp = false;
 
-			Debug.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME));
-			if ((nargs = args.Length) > 0)
+#if DEBUG
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME));
+#endif
+#if TRACE
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME_2));
+#endif
+            if ((nargs = args.Length) > 0)
 				for (int i = 0; i < nargs; i++) {
 					anArg = args[i];
 					if ((len = anArg.Length) >= 2) {
@@ -46,7 +51,7 @@ namespace NSprojectgen {
 										case "c": opts.projectType = ProjectType.ConsoleApp; break;
 										case "d": opts.projectType = ProjectType.ClassLibrary; break;
 										case "w": opts.projectType = ProjectType.WindowsForm; break;
-										case "x": opts.projectType = ProjectType.XamlApp; opts.xamlType = XamlWindowType.RegularWindow; break;
+										case "x": opts.projectType = ProjectType.XamlApp; if (opts.xamlType==  XamlWindowType.NONE) opts.xamlType = XamlWindowType.RegularWindow; break;
 										default: Console.Error.WriteLine("unknown project-projectType '" + atype + "'!"); break;
 									}
 									break;
@@ -99,8 +104,15 @@ namespace NSprojectgen {
 					exitCode = 1;
 				}
 			}
-			Debug.Listeners.Remove(PGOptions.LISTENER_NAME);
-			Environment.Exit(exitCode);
+#if DEBUG
+            Debug.Flush();
+            Debug.Listeners.Remove(PGOptions.LISTENER_NAME);
+#endif
+#if TRACE
+            Trace.Flush();
+            Trace.Listeners.Remove(PGOptions.LISTENER_NAME_2);
+#endif
+            Environment.Exit(exitCode);
 		}
 
 		static void showUserHelp(TextWriter tw, Assembly a) {

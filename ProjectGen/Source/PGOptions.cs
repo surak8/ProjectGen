@@ -4,12 +4,13 @@ using System.Collections.Generic;
 namespace NSprojectgen {
 	class PGOptions {
 
-		#region constants
-		public const string LISTENER_NAME = "dummy";
-		#endregion
+        #region constants
+        public const string LISTENER_NAME = "dummy";
+        public const string LISTENER_NAME_2 = "trace";
+        #endregion
 
-		#region fields
-		bool explicitNamespace;
+        #region fields
+        bool explicitNamespace;
 		readonly List<string> _xamlPages = new List<string>();
 		#endregion
 
