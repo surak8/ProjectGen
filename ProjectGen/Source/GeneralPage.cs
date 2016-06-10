@@ -99,11 +99,12 @@ namespace NSprojectgen {
             ctd.Members.Add(createNextButtonClick("PageN.xaml"));
             ctd.Members.Add(createPrfevButtonClick());
         }
-        #endregion
-        #endregion
+		#endregion
+		#endregion
+		GenFileType IXamlFileGenerationData.generationType { get { return GenFileType.View; } }
 
-        #region methods
-        CodeMemberMethod createNextButtonClick(string nextPage) {
+		#region methods
+		CodeMemberMethod createNextButtonClick(string nextPage) {
             CodeMemberMethod ret = new CodeMemberMethod();
 
             addParms(ret);

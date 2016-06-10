@@ -57,10 +57,11 @@ class HomeDataProvider : IXamlFileGenerationData {
     void IXamlFileGenerationData.generateCode(CodeNamespace ns, CodeTypeDeclaration ctd, CodeConstructor cc) {
         ctd.Members.Add(createNextButtonClick("Page0.xaml"));
     }
-    #endregion
+	#endregion
+	GenFileType IXamlFileGenerationData.generationType { get { return GenFileType.View; } }
 
-    #region constants
-    const string NEXT_METHOD_NAME = "nextClicked";
+	#region constants
+	const string NEXT_METHOD_NAME = "nextClicked";
     #endregion
 
     #region methods

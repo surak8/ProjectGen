@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
+// -f WpfApplication -tx -g -xn -xf Page0 -xf Page1
 namespace NSprojectgen {
 
 	class driver {
@@ -67,6 +68,7 @@ namespace NSprojectgen {
 										default: Console.Error.WriteLine("unknown xaml-type '" + atype + "'!"); opts.xamlType = XamlWindowType.RegularWindow; break;
 									}
 									break;
+								case 'b': opts.isVB = true;break;
 								case 'C': opts.isCPPProject = true; break;
 								case 'D': opts.doDevExpress = true; break;
 								case 'g': opts.generateCode = true; break;
@@ -92,6 +94,7 @@ namespace NSprojectgen {
 				if (fixNS)
 					opts.calculateNamespace();
 				try {
+					opts.createProvider();
 					if (opts.isCPPProject)
 						CProjectGenerator.generate(opts);
 					else
@@ -118,7 +121,8 @@ namespace NSprojectgen {
 		static void showUserHelp(TextWriter tw, Assembly a) {
 			tw.WriteLine("usage:");
 			tw.WriteLine("\t" + Path.GetFileNameWithoutExtension(a.Location) +
-				": -[f projectFileName] -[n namespace] -[v assemblyVersion] -[t c/d/w] [-Dgps] [-x [n/w]] [-xf page ...]\n");
+				": -[f projectFileName] -[n namespace] -[v assemblyVersion] -[t c/d/w] [-bDgps] [-x [n/w]] [-xf page ...]\n");
+			tw.WriteLine("-b\tgenerate VB.");
 			tw.WriteLine("-C\tgenerate C++ project.");
 			tw.WriteLine("-D\tgenerate DevExpress project.");
 			tw.WriteLine("-g\tgenerate code.");

@@ -59,5 +59,8 @@ namespace NSprojectgen {
         void IXamlFileGenerationData.generateCode(CodeNamespace ns, CodeTypeDeclaration ctd, CodeConstructor cc) { }
         #endregion
         #endregion
-    }
+					 
+		GenFileType IXamlFileGenerationData.generationType { get { return GenFileType.View; } }
+
+	}
 }

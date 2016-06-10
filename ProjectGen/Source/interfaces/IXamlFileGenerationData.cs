@@ -3,22 +3,27 @@ using System.Xml;
 
 namespace NSprojectgen {
     /// <summary>Interface describing XAML-file generation.</summary>
-    public interface IXamlFileGenerationData {
+    internal interface IXamlFileGenerationData {
         /// <summary>The element-name of this class</summary>
         string elementName { get; }
         /// <summary>The base of the projectFileName for this class.</summary>
         string fileName { get; }
         /// <summary>The namespace for this class.</summary>
         string nameSpace { get; }
-        /// <summary>read-write name of the XAML-file.</summary>
-        string xamlName { get; set; }
+
+		/// <summary>Type of file being generated.</summary>
+		GenFileType generationType { get; }
+
+		/// <summary>blah</summary>
+		bool generateViewModel { get; }
+
+		/// <summary>read-write name of the XAML-file.</summary>
+		string xamlName { get; set; }
         /// <summary>read-write name of the code-behind file.</summary>
         string codeBehindName { get; set; }
         /// <summary>read-write name of the view-model file.</summary>
         string viewModelName { get; set; }
 
-		/// <summary>blah</summary>
-		bool generateViewModel { get; }
 
 		/// <summary>any imports required to support this class.</summary>
 		/// <param name="ns"></param>

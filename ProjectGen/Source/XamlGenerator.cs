@@ -51,7 +51,7 @@ namespace NSprojectgen {
             IDictionary<string, string> tmp = new Dictionary<string, string>();
 
             if (!string.IsNullOrEmpty(depName))
-                tmp.Add("DependentUpon", depName);
+                tmp.Add("DependentUpon", Path.GetFileName(depName));
             tmp.Add("SubType", "Code");
             generateCompile(pige, fname, tmp);
 

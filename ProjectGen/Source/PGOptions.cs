@@ -1,5 +1,7 @@
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NSprojectgen {
 	class PGOptions {
@@ -23,6 +25,9 @@ namespace NSprojectgen {
 			assemblyVersion = "1.0.0.0";
 			calculateNamespace();
 			xamlType = XamlWindowType.NONE;
+			options = new CodeGeneratorOptions();
+			options.BlankLinesBetweenMembers = false;
+			options.ElseOnClosing = true;
 		}
 		#endregion
 
@@ -41,6 +46,9 @@ namespace NSprojectgen {
 
 		#endregion
 		public List<string> xamlPages { get { return _xamlPages; } }
+		public CodeGeneratorOptions options { get; private set; }
+		public CodeDomProvider provider { get; private set; }
+		public bool isVB { get; set; }
 
 		#region methods
 		internal void calculateNamespace() {
@@ -57,6 +65,19 @@ namespace NSprojectgen {
 			if (string.IsNullOrEmpty(v))
 				throw new ArgumentNullException("v", "invalid XAML page-name.");
 					this._xamlPages.Add(v);
+		}
+
+		internal void createProvider() {
+			Debug.Print("here");
+			if (this.isCPPProject)
+				provider = new Microsoft.VisualC.CppCodeProvider();
+			else {
+				if (isVB)
+					provider = new Microsoft.VisualBasic.VBCodeProvider();
+				else
+					provider = new Microsoft.CSharp.CSharpCodeProvider();
+			}
+
 		}
 
 		#endregion

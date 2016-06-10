@@ -39,7 +39,9 @@ namespace NSprojectgen {
         void IXamlFileGenerationData.addImports(CodeNamespace ns) { }
         void IXamlFileGenerationData.generateModelCode(CodeNamespace ns, CodeTypeDeclaration ctd) { }
         void IXamlFileGenerationData.generateCode(CodeNamespace ns, CodeTypeDeclaration ctd, CodeConstructor cc) { }
-        #endregion
-        #endregion
-    }
+		#endregion
+		#endregion
+		GenFileType IXamlFileGenerationData.generationType { get { return GenFileType.View; } }
+
+	}
 }

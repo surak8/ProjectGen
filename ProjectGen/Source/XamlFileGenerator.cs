@@ -48,56 +48,74 @@ namespace NSprojectgen {
                 return _xws;
             }
         }
-        #endregion
+		#endregion
 
-        /// <summary>do it.</summary>
-        /// <param name="ixfgd"></param>
-        //		public static void generateFile(IXamlFileGenerationData ixfgd, bool generateViewModel) {
-        public static void generateFile(IXamlFileGenerationData ixfgd) {
-            StringBuilder sb;
-            CodeDomProvider cdp = new CSharpCodeProvider();
-            CodeGeneratorOptions opts;
-            string fname, ename, ns, modelName;
+		/// <summary>do it.</summary>
+		/// <param name="ixfgd"></param>
+		//		public static void generateFile(IXamlFileGenerationData ixfgd, bool generateViewModel) {
+		internal static void generateFile(IXamlFileGenerationData ixfgd) {
+			StringBuilder sb;
+			CodeDomProvider cdp = new CSharpCodeProvider();
+			CodeGeneratorOptions opts;
+			string fname, ename, ns, modelName;
 
-            if (ixfgd == null)
-                throw new ArgumentNullException("ixfgd", "generation-object is null!");
-            if (string.IsNullOrEmpty(ename = ixfgd.elementName))
-                throw new ArgumentNullException("ename", "element-name is null!");
-            if (string.IsNullOrEmpty(fname = ixfgd.fileName))
-                if (string.IsNullOrEmpty(fname))
-                    throw new ArgumentNullException("fname", "file-name is null!");
-            ixfgd.xamlName = fname + ".xaml";
-            ns = ixfgd.nameSpace;
-            sb = new StringBuilder();
-            using (StringWriter sw = new StringWriter(sb)) {
-                using (XmlWriter xw = XmlWriter.Create(sw, settings)) {
-                    xw.WriteStartElement(ename, NS_DEFAULT);
-                    xw.WriteAttributeString("xmlns", "x", null, NS_X);
-                    xw.WriteAttributeString("xmlns", "d", null, NS_BLEND);
-                    if (!string.IsNullOrEmpty(ns))
-                        xw.WriteAttributeString("xmlns", "local", null, "clr-namespace:" + ns);
-                    ixfgd.populateElementAttributes(xw);
-                    ixfgd.populateElement(xw);
-                    xw.WriteEndDocument();
-                }
-            }
-            if (showFileContent)
-                Debug.Print(sb.ToString());
-            File.WriteAllText(ixfgd.xamlName, sb.ToString());
+			if (ixfgd == null)
+				throw new ArgumentNullException("ixfgd", "generation-object is null!");
+			if (string.IsNullOrEmpty(ename = ixfgd.elementName))
+				throw new ArgumentNullException("ename", "element-name is null!");
+			if (string.IsNullOrEmpty(fname = ixfgd.fileName))
+				if (string.IsNullOrEmpty(fname))
+					throw new ArgumentNullException("fname", "file-name is null!");
+			if (ixfgd.generationType == GenFileType.View)
+				ixfgd.xamlName = Path.Combine("Source\\Views\\", fname + ".xaml");
+			else
+				ixfgd.xamlName = fname + ".xaml";
+			ns = ixfgd.nameSpace;
+			sb = new StringBuilder();
+			using (StringWriter sw = new StringWriter(sb)) {
+				using (XmlWriter xw = XmlWriter.Create(sw, settings)) {
+					xw.WriteStartElement(ename, NS_DEFAULT);
+					xw.WriteAttributeString("xmlns", "x", null, NS_X);
+					xw.WriteAttributeString("xmlns", "d", null, NS_BLEND);
+					if (!string.IsNullOrEmpty(ns))
+						xw.WriteAttributeString("xmlns", "local", null, "clr-namespace:" + ns);
+					ixfgd.populateElementAttributes(xw);
+					ixfgd.populateElement(xw);
+					xw.WriteEndDocument();
+				}
+			}
+			if (showFileContent)
+				Debug.Print(sb.ToString());
+			createDirIfNeeded(ixfgd.xamlName);
+			File.WriteAllText(ixfgd.xamlName, sb.ToString());
 
-            opts = new CodeGeneratorOptions();
-            opts.BlankLinesBetweenMembers = false;
-            opts.ElseOnClosing = true;
+			opts = new CodeGeneratorOptions();
+			opts.BlankLinesBetweenMembers = false;
+			opts.ElseOnClosing = true;
 
-            ixfgd.codeBehindName = fname + ".xaml." + cdp.FileExtension;
-            modelName = fname + "ViewModel";
-            ixfgd.viewModelName = modelName + "." + cdp.FileExtension;
-            createMainFile(ixfgd.codeBehindName, ns, fname, ename, cdp, modelName, opts, ixfgd.generateViewModel, ixfgd);
-            if (ixfgd.generateViewModel)
-                createModelfile(ixfgd.viewModelName, ns, modelName, cdp, opts, ixfgd);
-        }
+			modelName = fname + "ViewModel";
+			if (ixfgd.generationType == GenFileType.View) {
+				ixfgd.codeBehindName = Path.Combine("Source\\Views", fname + ".xaml." + cdp.FileExtension);
+				ixfgd.viewModelName = Path.Combine("Source\\Models\\", modelName + "." + cdp.FileExtension);
+				//				ixfgd.viewModelName = ;
+			} else {
+				ixfgd.codeBehindName = fname + ".xaml." + cdp.FileExtension;
+				ixfgd.viewModelName = modelName + "." + cdp.FileExtension;
+			}
+			//		ixfgd.viewModelName = modelName + "." + cdp.FileExtension;
+			createMainFile(ixfgd.codeBehindName, ns, fname, ename, cdp, modelName, opts, ixfgd.generateViewModel, ixfgd);
+			if (ixfgd.generateViewModel)
+				createModelfile(ixfgd.viewModelName, ns, modelName, cdp, opts, ixfgd);
+		}
 
-        static void createModelfile(string outModelName, string nameSpace, string modelName, CodeDomProvider cdp, CodeGeneratorOptions opts, IXamlFileGenerationData ixfgd) {
+		  static void createDirIfNeeded(string fname) {
+			string tmp;
+
+			if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
+				Directory.CreateDirectory(tmp);
+		}
+
+		static void createModelfile(string outModelName, string nameSpace, string modelName, CodeDomProvider cdp, CodeGeneratorOptions opts, IXamlFileGenerationData ixfgd) {
             CodeCompileUnit ccu = null;
             CodeNamespace ns0, ns;
             CodeTypeDeclaration ctd;
@@ -167,23 +185,29 @@ namespace NSprojectgen {
         }
 
         static void outputFile(CodeCompileUnit ccu, CodeNamespace ns, CodeDomProvider cdp, string outModelName, CodeGeneratorOptions opts) {
-            StringBuilder sb;
+			StringBuilder sb;
 
-            using (TextWriter sw = new StringWriter(sb = new StringBuilder())) {
-                if (ccu != null)
-                    cdp.GenerateCodeFromCompileUnit(ccu, sw, opts);
-                else
-                    cdp.GenerateCodeFromNamespace(ns, sw, opts);
-            }
-            File.WriteAllText(outModelName, sb.ToString());
-            if (showFileContent)
-                Debug.Print(sb.ToString());
-            sb.Clear();
-            sb = null;
-        }
+			using (TextWriter sw = new StringWriter(sb = new StringBuilder())) {
+				if (ccu != null)
+					cdp.GenerateCodeFromCompileUnit(ccu, sw, opts);
+				else
+					cdp.GenerateCodeFromNamespace(ns, sw, opts);
+			}
+			//			NewMethod(outModelName);c
+			createDirIfNeeded(outModelName);
+			File.WriteAllText(outModelName, sb.ToString());
+			if (showFileContent)
+				Debug.Print(sb.ToString());
+			sb.Clear();
+			sb = null;
+		}
 
-        #region code-generation methods
-        static CodeMemberEvent createEvent(CodeEventReferenceExpression cere) {
+		//		  static void NewMethod(string outModelName) {
+//		void createDirectoryFor(string fname) { }
+		//}
+
+		#region code-generation methods
+		static CodeMemberEvent createEvent(CodeEventReferenceExpression cere) {
             CodeMemberEvent cme = new CodeMemberEvent();
 
             cme.Attributes = MemberAttributes.Public | MemberAttributes.Final;
