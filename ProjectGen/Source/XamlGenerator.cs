@@ -16,12 +16,12 @@ namespace NSprojectgen {
 			HomeDataProvider hdp = null;
 			string tmp2;
 
-			XamlFileGenerator.generateFile(apd);
-			XamlFileGenerator.generateFile(wdp);
+			XamlFileGenerator.generateFile(apd, opts1);
+			XamlFileGenerator.generateFile(wdp, opts1);
 
 			if (opts1.xamlType == XamlWindowType.NavigationWindow) {
 				hdp = new HomeDataProvider(wdp.homePage, opts1.projectNamespace);
-				XamlFileGenerator.generateFile(hdp);
+				XamlFileGenerator.generateFile(hdp, opts1);
 				generatePageAndModel(pige, hdp);
 			}
 
@@ -36,7 +36,7 @@ namespace NSprojectgen {
 				GeneralPage gp;
 				foreach (string aPageName in opts1.xamlPages) {
 					gp = new GeneralPage(aPageName, opts1.projectNamespace);
-					XamlFileGenerator.generateFile(gp);
+					XamlFileGenerator.generateFile(gp, opts1);
 					generatePageAndModel(pige, gp);
 				}
 			}

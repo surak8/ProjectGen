@@ -67,7 +67,6 @@ namespace NSprojectgen {
 		}
 
 		internal void createProvider() {
-			Debug.Print("here");
 			if (this.isCPPProject)
 				provider = new Microsoft.VisualC.CppCodeProvider();
 			else {

@@ -1,6 +1,7 @@
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using System;
+using System.Reflection;
 
 namespace NSprojectgen {
 	class CProjectGenerator {
@@ -145,7 +146,7 @@ namespace NSprojectgen {
 		}
 
 		internal static void generate(PGOptions opts) {
-			throw new NotImplementedException();
+			Logger.log(MethodBase.GetCurrentMethod());
 		}
 
 		static ProjectPropertyGroupElement addPropertyGroup(ProjectRootElement root, string p) {
@@ -208,7 +209,7 @@ namespace NSprojectgen {
 		static void createGlobals(string ns, ProjectType type, Project p, string label) {
 			var v2 = p.Xml.CreatePropertyGroupElement();
 			Guid guid;
-            string framework = type == ProjectType.XamlApp ? FRAMEWORK_452 : FRAMEWORK_4;
+			string framework = type == ProjectType.XamlApp ? FRAMEWORK_452 : FRAMEWORK_4;
 
 			v2.Label = label;
 			p.Xml.AppendChild(v2);
