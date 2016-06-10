@@ -6,13 +6,13 @@ using System.Diagnostics;
 namespace NSprojectgen {
 	class PGOptions {
 
-        #region constants
-        public const string LISTENER_NAME = "dummy";
-        public const string LISTENER_NAME_2 = "trace";
-        #endregion
+		#region constants
+		public const string LISTENER_NAME = "dummy";
+		public const string LISTENER_NAME_2 = "trace";
+		#endregion
 
-        #region fields
-        bool explicitNamespace;
+		#region fields
+		bool explicitNamespace;
 		readonly List<string> _xamlPages = new List<string>();
 		#endregion
 
@@ -43,12 +43,11 @@ namespace NSprojectgen {
 		public string assemblyVersion { get; set; }
 		public string projectNamespace { get; private set; }
 		public XamlWindowType xamlType { get; set; }
-
-		#endregion
 		public List<string> xamlPages { get { return _xamlPages; } }
 		public CodeGeneratorOptions options { get; private set; }
 		public CodeDomProvider provider { get; private set; }
 		public bool isVB { get; set; }
+		#endregion
 
 		#region methods
 		internal void calculateNamespace() {
@@ -64,7 +63,7 @@ namespace NSprojectgen {
 		internal void addXmlPage(string v) {
 			if (string.IsNullOrEmpty(v))
 				throw new ArgumentNullException("v", "invalid XAML page-name.");
-					this._xamlPages.Add(v);
+			this._xamlPages.Add(v);
 		}
 
 		internal void createProvider() {
@@ -82,9 +81,10 @@ namespace NSprojectgen {
 
 		#endregion
 	}
+
 	enum XamlWindowType {
-		NONE=0,
-		RegularWindow=1,
-		NavigationWindow=2,
+		NONE = 0,
+		RegularWindow = 1,
+		NavigationWindow = 2,
 	}
 }

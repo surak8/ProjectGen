@@ -20,12 +20,12 @@ namespace NSprojectgen {
 			bool showHelp = false;
 
 #if DEBUG
-            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME));
+			Debug.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME));
 #endif
 #if TRACE
-            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME_2));
+			Trace.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME_2));
 #endif
-            if ((nargs = args.Length) > 0)
+			if ((nargs = args.Length) > 0)
 				for (int i = 0; i < nargs; i++) {
 					anArg = args[i];
 					if ((len = anArg.Length) >= 2) {
@@ -52,13 +52,13 @@ namespace NSprojectgen {
 										case "c": opts.projectType = ProjectType.ConsoleApp; break;
 										case "d": opts.projectType = ProjectType.ClassLibrary; break;
 										case "w": opts.projectType = ProjectType.WindowsForm; break;
-										case "x": opts.projectType = ProjectType.XamlApp; if (opts.xamlType==  XamlWindowType.NONE) opts.xamlType = XamlWindowType.RegularWindow; break;
+										case "x": opts.projectType = ProjectType.XamlApp; if (opts.xamlType == XamlWindowType.NONE) opts.xamlType = XamlWindowType.RegularWindow; break;
 										default: Console.Error.WriteLine("unknown project-projectType '" + atype + "'!"); break;
 									}
 									break;
 								case 'x':
 									if (len > 2) atype = anArg.Substring(2).Trim();
-									else { atype = args[i + 1];i++; }
+									else { atype = args[i + 1]; i++; }
 									switch (atype) {
 										case "f":
 											if (len > 3) { atype = anArg.Substring(2).Trim(); opts.addXmlPage(atype); } else { opts.addXmlPage(atype = args[i + 1]); i++; }
@@ -68,7 +68,7 @@ namespace NSprojectgen {
 										default: Console.Error.WriteLine("unknown xaml-type '" + atype + "'!"); opts.xamlType = XamlWindowType.RegularWindow; break;
 									}
 									break;
-								case 'b': opts.isVB = true;break;
+								case 'b': opts.isVB = true; break;
 								case 'C': opts.isCPPProject = true; break;
 								case 'D': opts.doDevExpress = true; break;
 								case 'g': opts.generateCode = true; break;
@@ -108,14 +108,14 @@ namespace NSprojectgen {
 				}
 			}
 #if DEBUG
-            Debug.Flush();
-            Debug.Listeners.Remove(PGOptions.LISTENER_NAME);
+			Debug.Flush();
+			Debug.Listeners.Remove(PGOptions.LISTENER_NAME);
 #endif
 #if TRACE
-            Trace.Flush();
-            Trace.Listeners.Remove(PGOptions.LISTENER_NAME_2);
+			Trace.Flush();
+			Trace.Listeners.Remove(PGOptions.LISTENER_NAME_2);
 #endif
-            Environment.Exit(exitCode);
+			Environment.Exit(exitCode);
 		}
 
 		static void showUserHelp(TextWriter tw, Assembly a) {

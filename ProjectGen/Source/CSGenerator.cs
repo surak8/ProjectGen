@@ -32,8 +32,8 @@ namespace NSprojectgen {
 		static readonly CodeExpression ceNull = new CodePrimitiveExpression();
 		static readonly CodeTypeReference ctrEA = new CodeTypeReference("EventArgs");
 		#endregion
-		    
-		public static void createAsmInfoFile(string aFile, string aName, string szVersion, CodeDomProvider cdp, CodeGeneratorOptions opts) {
+
+		public static void createAsmInfoFile(string aFile, string aName, string szVersion, PGOptions opts) {
 			string tmp, dir;
 
 			if (Path.IsPathRooted(aFile))
@@ -44,11 +44,11 @@ namespace NSprojectgen {
 			if (!Directory.Exists(dir = Path.GetDirectoryName(tmp)))
 				Directory.CreateDirectory(dir);
 			using (TextWriter tw = new StreamWriter(tmp)) {
-				cdp.GenerateCodeFromCompileUnit(createCompileUnit(aName, szVersion, cdp, opts), tw, opts);
+				opts.provider.GenerateCodeFromCompileUnit(createCompileUnit(aName, szVersion, opts), tw, opts.options);
 			}
 		}
 
-		static CodeCompileUnit createCompileUnit(string aName, string szVersion, CodeDomProvider cdp, CodeGeneratorOptions opts) {
+		static CodeCompileUnit createCompileUnit(string aName, string szVersion, PGOptions opts) {
 			var v = new CodeSnippetCompileUnit();
 			StringBuilder sb;
 			StringWriter sw = new StringWriter(sb = new StringBuilder());
@@ -60,7 +60,7 @@ namespace NSprojectgen {
 					  new CodeNamespaceImport ("System.Runtime.InteropServices"),
 			  });
 
-			cdp.GenerateCodeFromNamespace(ns, sw, opts);
+			opts.provider.GenerateCodeFromNamespace(ns, sw, opts.options);
 
 			string companyName = Properties.Settings.Default.CustomCompany;
 
@@ -81,7 +81,7 @@ namespace NSprojectgen {
 					"[assembly:AssemblyVersion(\"" + szVersion + "\")]",
 					"[assembly:AssemblyFileVersion(\"" + szVersion + "\")]",
 					"[assembly:AssemblyInformationalVersion(\"" + szVersion + "\")]"));
-			cdp.GenerateCodeFromMember(v2, sw, opts);
+			opts.provider.GenerateCodeFromMember(v2, sw, opts.options);
 			sw.Flush();
 			sw.Close();
 			sw.Dispose();
@@ -90,31 +90,31 @@ namespace NSprojectgen {
 			return v;
 		}
 
-		internal static void generateMainFiles(Project p, PGOptions opts1, ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2) {
-			switch (opts1.projectType) {
-				case ProjectType.WindowsForm: generateForms(pige2, cdp, opts2, opts1); break;
-				case ProjectType.ConsoleApp: generateMain(pige2, cdp, opts2, opts1); break;
-				case ProjectType.ClassLibrary: generateLib(pige2, cdp, opts2, opts1); break;
-				case ProjectType.XamlApp: generateXaml(pige2, cdp, opts2, opts1); break;
+		internal static void generateMainFiles(Project p, PGOptions opts, ProjectItemGroupElement pige2) {
+			switch (opts.projectType) {
+				case ProjectType.WindowsForm: generateForms(pige2, opts); break;
+				case ProjectType.ConsoleApp: generateMain(pige2, opts); break;
+				case ProjectType.ClassLibrary: generateLib(pige2, opts); break;
+				case ProjectType.XamlApp: generateXaml(pige2, opts); break;
 				default:
-					throw new InvalidOperationException("unhandled " + opts1.projectType.GetType().Name + ": " + opts1.projectType);
+					throw new InvalidOperationException("unhandled " + opts.projectType.GetType().Name + ": " + opts.projectType);
 			}
 		}
 
-		static void generateXaml(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2, PGOptions opts1) {
+		static void generateXaml(ProjectItemGroupElement pige2, PGOptions opts) {
 			Trace.WriteLine("do something for XAML");
 		}
 
-		static void generateLib(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2, PGOptions opts1) {
+		static void generateLib(ProjectItemGroupElement pige2, PGOptions opts) {
 			string fname, tmp, relName, className;
 
-			className = opts1.assemblyName.Substring(0, 1).ToUpper() + opts1.assemblyName.Substring(1) + "Class";
-			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\" + className + "." + cdp.FileExtension);
+			className = opts.assemblyName.Substring(0, 1).ToUpper() + opts.assemblyName.Substring(1) + "Class";
+			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\" + className + "." + opts.provider.FileExtension);
 			if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
 				Directory.CreateDirectory(tmp);
 
 			using (TextWriter tw = new StreamWriter(fname)) {
-				cdp.GenerateCodeFromCompileUnit(createClass(opts1.projectNamespace, className), tw, opts2);
+				opts.provider.GenerateCodeFromCompileUnit(createClass(opts.projectNamespace, className), tw, opts.options);
 			}
 			if (pige2 != null)
 				pige2.AddItem("Compile", relName);
@@ -134,22 +134,22 @@ namespace NSprojectgen {
 			return ret;
 		}
 
-		static void generateForms(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2, PGOptions opts1) {
+		static void generateForms(ProjectItemGroupElement pige2, PGOptions opts) {
 			string fname, tmp, relName, relName2;
-			string asmName = opts1.assemblyName;
+			string asmName = opts.assemblyName, ext;
 
-			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\UI\\" + asmName + "Form." + cdp.FileExtension);
+			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\UI\\" + asmName + "Form." + (ext = opts.provider.FileExtension));
 			if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
 				Directory.CreateDirectory(tmp);
 
 			using (TextWriter tw = new StreamWriter(fname)) {
-				cdp.GenerateCodeFromCompileUnit(createCCUForm(opts1.projectNamespace, asmName, opts1.doDevExpress), tw, opts2);
+				opts.provider.GenerateCodeFromCompileUnit(createCCUForm(opts.projectNamespace, asmName, opts.doDevExpress), tw, opts.options);
 			}
 
-			fname = Path.Combine(Directory.GetCurrentDirectory(), relName2 = "Source\\UI\\" + asmName + "Form.Designer." + cdp.FileExtension);
+			fname = Path.Combine(Directory.GetCurrentDirectory(), relName2 = "Source\\UI\\" + asmName + "Form.Designer." + ext);
 
 			using (TextWriter tw = new StreamWriter(fname)) {
-				cdp.GenerateCodeFromCompileUnit(createCCUDesigner(opts1.projectNamespace, asmName, opts1.doDevExpress), tw, opts2);
+				opts.provider.GenerateCodeFromCompileUnit(createCCUDesigner(opts.projectNamespace, asmName, opts.doDevExpress), tw, opts.options);
 			}
 			if (pige2 != null) {
 				pige2.AddItem("Compile", relName);
@@ -654,15 +654,15 @@ namespace NSprojectgen {
 			return m;
 		}
 
-		static void generateMain(ProjectItemGroupElement pige2, CodeDomProvider cdp, CodeGeneratorOptions opts2, PGOptions opts1) {
+		static void generateMain(ProjectItemGroupElement pige2, PGOptions opts) {
 			string fname, tmp, relName;
 
-			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\adriver." + cdp.FileExtension);
+			fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\adriver." + opts.provider.FileExtension);
 			if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
 				Directory.CreateDirectory(tmp);
 
 			using (TextWriter tw = new StreamWriter(fname)) {
-				cdp.GenerateCodeFromCompileUnit(createCCUMain(opts1.projectNamespace, opts1.assemblyName, false), tw, opts2);
+				opts.provider.GenerateCodeFromCompileUnit(createCCUMain(opts.projectNamespace, opts.assemblyName, false), tw, opts.options);
 			}
 			pige2.AddItem("Compile", relName);
 		}
