@@ -90,7 +90,7 @@ namespace NSprojectgen {
 			if (showHelp)
 				showUserHelp(Console.Error, Assembly.GetEntryAssembly());
 			else {
-				opts.projectFileName = opts.assemblyName + (opts.isCPPProject ? ".vcxproj" : ".csproj");
+				opts.projectFileName = opts.assemblyName + (opts.isCPPProject ? ".vcxproj" : (opts.isVB ?".vbproj":".csproj"));
 				if (fixNS)
 					opts.calculateNamespace();
 				try {

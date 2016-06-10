@@ -38,6 +38,7 @@ namespace NSprojectgen {
 
 			switch (type) {
 				case ProjectType.ConsoleApp: typeDesc = "Application"; break;
+				case ProjectType.XamlApp: typeDesc = "Application"; break;
 				case ProjectType.ClassLibrary: typeDesc = "DynamicLibrary"; break;
 				default:
 					throw new InvalidOperationException("unhandled projectType: " + type);
@@ -146,7 +147,8 @@ namespace NSprojectgen {
 		}
 
 		internal static void generate(PGOptions opts) {
-			Logger.log(MethodBase.GetCurrentMethod());
+			//			Logger.log(MethodBase.GetCurrentMethod());
+			generate(opts.projectFileName, opts.assemblyVersion, opts.assemblyVersion, opts.projectNamespace, opts.projectType);
 		}
 
 		static ProjectPropertyGroupElement addPropertyGroup(ProjectRootElement root, string p) {
