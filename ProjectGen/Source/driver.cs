@@ -121,14 +121,18 @@ namespace NSprojectgen {
 		static void showUserHelp(TextWriter tw, Assembly a) {
 			tw.WriteLine("usage:");
 			tw.WriteLine("\t" + Path.GetFileNameWithoutExtension(a.Location) +
-				": -[f projectFileName] -[n namespace] -[v assemblyVersion] -[t c/d/w] [-bDgps] [-x [n/w]] [-xf page ...]\n");
+				": -[f projectFileName] -[n namespace] -[v assemblyVersion] -[t c/d/x/w] [-bDgps] [-x [n/w]] [-xf page ...]\n");
 			tw.WriteLine("-b\tgenerate VB.");
 			tw.WriteLine("-C\tgenerate C++ project.");
 			tw.WriteLine("-D\tgenerate DevExpress project.");
 			tw.WriteLine("-g\tgenerate code.");
 			tw.WriteLine("-p\tgenerate phibro-style project.");
 			tw.WriteLine("-a\tgenerate simplyProject project.");
-			tw.WriteLine("-xn\tXAML navigation-window.");
+            tw.WriteLine("-tc\tgenerate console application.");
+            tw.WriteLine("-td\tgenerate dll.");
+            tw.WriteLine("-tx\tgenerate XAML application.");
+            tw.WriteLine("-tw\tgenerate Windows application.");
+            tw.WriteLine("-xn\tXAML navigation-window.");
 			tw.WriteLine("-xw\tXAML normal window.");
 		}
 	}
