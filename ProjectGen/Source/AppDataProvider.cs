@@ -34,7 +34,7 @@ namespace NSprojectgen {
         }
         void IXamlFileGenerationData.populateElementAttributes(XmlWriter xw) {
             xw.WriteAttributeString("Class", XamlFileGenerator.NS_X, this.nameSpace + "." + this.elementName);
-            xw.WriteAttributeString("StartupUri", this.windowClassName + ".xaml");
+            xw.WriteAttributeString("StartupUri", "/Source/Views/"+this.windowClassName + ".xaml");
         }
         void IXamlFileGenerationData.addImports(CodeNamespace ns) { }
         void IXamlFileGenerationData.generateModelCode(CodeNamespace ns, CodeTypeDeclaration ctd) { }

@@ -41,17 +41,6 @@ namespace NSprojectgen {
             ns.Imports.Add(new CodeNamespaceImport("System.Windows.Controls"));
         }
         void IXamlFileGenerationData.populateElement(XmlWriter xw) {
-            //            Logger.log(MethodBase.GetCurrentMethod());
-            /*
-             *   <DockPanel>
-                    <Label Content="Page0" DockPanel.Dock="Top" HorizontalAlignment="Center" FontWeight="Bold"/>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-                        <Button Content="Prev"   Width="50"/>
-                        <Button Content="Next"   Width="50"/>
-                    </StackPanel>
-                    <TextBox Text="textbox" />
-                </DockPanel>
-             * */
             xw.WriteStartElement("DockPanel");
 
             xw.WriteStartElement("Label");
@@ -89,22 +78,29 @@ namespace NSprojectgen {
             xw.WriteEndElement();
         }
         void IXamlFileGenerationData.populateElementAttributes(XmlWriter xw) {
+            xw.WriteAttributeString("xmlns", "mc", null, XamlFileGenerator.NS_MARKUP);
+            xw.WriteAttributeString("Ignorable", XamlFileGenerator.NS_MARKUP, "d");
+
             xw.WriteAttributeString("Name", XamlFileGenerator.NS_X, "zzz");
             xw.WriteAttributeString("Class", XamlFileGenerator.NS_X, this.nameSpace + "." + this.fileName);
-            xw.WriteAttributeString("Width", "200");
-            xw.WriteAttributeString("Height", "200");
+            xw.WriteAttributeString("Width", "AUTO");
+            xw.WriteAttributeString("Height", "AUTO");
+            /*
+             *     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             *     mc:Ignorable="d"
+             * */
         }
         void IXamlFileGenerationData.generateModelCode(CodeNamespace ns, CodeTypeDeclaration ctd) { }
         void IXamlFileGenerationData.generateCode(CodeNamespace ns, CodeTypeDeclaration ctd, CodeConstructor cc) {
             ctd.Members.Add(createNextButtonClick("PageN.xaml"));
             ctd.Members.Add(createPrfevButtonClick());
         }
-		#endregion
-		#endregion
-		GenFileType IXamlFileGenerationData.generationType { get { return GenFileType.View; } }
+        #endregion
+        #endregion
+        GenFileType IXamlFileGenerationData.generationType { get { return GenFileType.View; } }
 
-		#region methods
-		CodeMemberMethod createNextButtonClick(string nextPage) {
+        #region methods
+        CodeMemberMethod createNextButtonClick(string nextPage) {
             CodeMemberMethod ret = new CodeMemberMethod();
 
             addParms(ret);
@@ -147,7 +143,6 @@ namespace NSprojectgen {
                         new CodeMethodInvokeExpression(ceNav, "GoBack"))));
             return ret;
         }
-
         #endregion
     }
 }
