@@ -7,7 +7,6 @@ using System.Reflection;
 // -g -f MyApp -tx   -xn -xf Page1
 // -tx -g -xf dummy
 
-
 namespace NSprojectgen {
 
     class driver {
@@ -22,10 +21,6 @@ namespace NSprojectgen {
             string atype;
             bool fixNS = false;
             bool showHelp = false;
-
-#if DEBUG
-            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME));
-#endif
 #if TRACE
             Trace.Listeners.Add(new TextWriterTraceListener(Console.Out, PGOptions.LISTENER_NAME_2));
 #endif
@@ -40,7 +35,7 @@ namespace NSprojectgen {
                                     else { opts.assemblyName = args[i + 1]; i++; }
                                     opts.calculateNamespace();
                                     break;
-                                case 'n':
+                                case 'N':
                                     if (len > 2) opts.setNamespace(anArg.Substring(2).Trim());
                                     else { opts.setNamespace(args[i + 1]); i++; }
                                     fixNS = false;
@@ -76,8 +71,10 @@ namespace NSprojectgen {
                                 case 'C': opts.isCPPProject = true; break;
                                 case 'D': opts.doDevExpress = true; break;
                                 case 'g': opts.generateCode = true; break;
+                                case 'n': opts.forceNo = true; break;
                                 case 'p': opts.usePhibroStyle = true; break;
                                 case 's': opts.simplyProject = true; break;
+                                case 'y': opts.forceYes = true; break;
                                 case 'h': showHelp = true; break;
                                 case '?': showHelp = true; break;
                             }
@@ -111,10 +108,6 @@ namespace NSprojectgen {
                     exitCode = 1;
                 }
             }
-#if DEBUG
-            Debug.Flush();
-            Debug.Listeners.Remove(PGOptions.LISTENER_NAME);
-#endif
 #if TRACE
             Trace.Flush();
             Trace.Listeners.Remove(PGOptions.LISTENER_NAME_2);
@@ -125,13 +118,15 @@ namespace NSprojectgen {
         static void showUserHelp(TextWriter tw, Assembly a) {
             tw.WriteLine("usage:");
             tw.WriteLine("\t" + Path.GetFileNameWithoutExtension(a.Location) +
-                ": -[f projectFileName] -[n namespace] -[v assemblyVersion] -[t c/d/x/w] [-bDgps] [-x [n/w]] [-xf page ...]\n");
+                ": -[f projectFileName] -[N namespace] -[v assemblyVersion] -[t c/d/x/w] [-bDgps] [-x [n/w]] [-xf page ...]\n");
             tw.WriteLine("-b\tgenerate VB.");
             tw.WriteLine("-C\tgenerate C++ project.");
             tw.WriteLine("-D\tgenerate DevExpress project.");
             tw.WriteLine("-g\tgenerate code.");
             tw.WriteLine("-p\tgenerate phibro-style project.");
-            tw.WriteLine("-a\tgenerate simplyProject project.");
+            tw.WriteLine("-n\tforce 'NO' to file-overwrite.");
+            tw.WriteLine("-s\tgenerate simply project.");
+            tw.WriteLine("-y\tforce 'YES' to file-overwrite.");
             tw.WriteLine("-tc\tgenerate console application.");
             tw.WriteLine("-td\tgenerate dll.");
             tw.WriteLine("-tx\tgenerate XAML application.");

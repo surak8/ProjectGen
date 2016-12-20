@@ -1,10 +1,9 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace NSprojectgen {
-	class PGOptions {
+    class PGOptions {
 
 		#region constants
 		public const string LISTENER_NAME = "dummy";
@@ -47,10 +46,12 @@ namespace NSprojectgen {
 		public CodeGeneratorOptions options { get; private set; }
 		public CodeDomProvider provider { get; private set; }
 		public bool isVB { get; set; }
-		#endregion
+        public bool forceYes { get; internal set; }
+        public bool forceNo{ get; internal set; }
+        #endregion
 
-		#region methods
-		internal void calculateNamespace() {
+        #region methods
+        internal void calculateNamespace() {
 			if (!explicitNamespace)
 				projectNamespace = "NS" + assemblyName.Substring(0, 1).ToUpper() + assemblyName.Substring(1);
 		}
@@ -75,9 +76,7 @@ namespace NSprojectgen {
 				else
 					provider = new Microsoft.CSharp.CSharpCodeProvider();
 			}
-
 		}
-
 		#endregion
 	}
 

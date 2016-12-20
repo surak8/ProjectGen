@@ -211,7 +211,7 @@ namespace NSprojectgen {
             xws.IndentChars = new string(' ', 4);
             xws.Encoding = Encoding.ASCII;
             xws.Encoding = Encoding.UTF8;
-            if (dontOverwriteFile(filename))
+            if (blah(filename, opts))
                 return;
 
             using (XmlWriter xw = XmlWriter.Create(filename, xws)) {
@@ -241,7 +241,26 @@ namespace NSprojectgen {
 
         }
 
-        internal static bool dontOverwriteFile(string filename) {
+        internal static bool blah(string filename, PGOptions opts) {
+            if (File.Exists(filename)) {
+                if (opts.forceNo) {
+                    Console.WriteLine("not over-writing:" + filename);
+                    return true;
+                } else if (!opts.forceYes) {
+                    if (dontOverwriteFile(filename)) {
+                        Console.WriteLine("NOT overwriting " + filename);
+                        return true;
+                    }
+                }
+            }
+            //            if (opts.forceno)
+            //              if (!opts.forceYes)
+            //                if (dontOverwriteFile(filename))
+            //                  return;
+            return false;
+        }
+
+        static bool dontOverwriteFile(string filename) {
             ConsoleKeyInfo response;
             char c = char.MinValue;
 

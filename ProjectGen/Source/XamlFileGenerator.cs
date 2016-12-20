@@ -72,24 +72,28 @@ namespace NSprojectgen {
                 ixfgd.xamlName = fname + ".xaml";
             ns = ixfgd.nameSpace;
             sb = new StringBuilder();
-            if (DefaultProjectGenerator.dontOverwriteFile(ixfgd.xamlName))
-                return;
-            using (StringWriter sw = new StringWriter(sb)) {
-                using (XmlWriter xw = XmlWriter.Create(sw, settings)) {
-                    xw.WriteStartElement(ename, NS_DEFAULT);
-                    xw.WriteAttributeString("xmlns", "x", null, NS_X);
-                    xw.WriteAttributeString("xmlns", "d", null, NS_BLEND);
-                    if (!string.IsNullOrEmpty(ns))
-                        xw.WriteAttributeString("xmlns", "local", null, "clr-namespace:" + ns);
-                    ixfgd.populateElementAttributes(xw);
-                    ixfgd.populateElement(xw);
-                    xw.WriteEndDocument();
+            //            if (!opts.forceYes ) 
+            //              if ( DefaultProjectGenerator.dontOverwriteFile(ixfgd.xamlName))
+            //            return;
+            if (!DefaultProjectGenerator.blah(ixfgd.xamlName, opts)) {
+                using (StringWriter sw = new StringWriter(sb)) {
+                    using (XmlWriter xw = XmlWriter.Create(sw, settings)) {
+                        xw.WriteStartElement(ename, NS_DEFAULT);
+                        xw.WriteAttributeString("xmlns", "x", null, NS_X);
+                        xw.WriteAttributeString("xmlns", "d", null, NS_BLEND);
+                        if (!string.IsNullOrEmpty(ns))
+                            xw.WriteAttributeString("xmlns", "local", null, "clr-namespace:" + ns);
+                        ixfgd.populateElementAttributes(xw);
+                        ixfgd.populateElement(xw);
+                        xw.WriteEndDocument();
+                    }
                 }
+                if (showFileContent)
+                    Debug.Print(sb.ToString());
+                createDirIfNeeded(ixfgd.xamlName);
+                File.WriteAllText(ixfgd.xamlName, sb.ToString());
+
             }
-            if (showFileContent)
-                Debug.Print(sb.ToString());
-            createDirIfNeeded(ixfgd.xamlName);
-            File.WriteAllText(ixfgd.xamlName, sb.ToString());
             ext = opts.provider.FileExtension;
             modelName = fname + "ViewModel";
             if (ixfgd.generationType == GenFileType.View) {
@@ -99,9 +103,11 @@ namespace NSprojectgen {
                 ixfgd.codeBehindName = fname + ".xaml." + ext;
                 ixfgd.viewModelName = modelName + "." + ext;
             }
-            createMainFile(ixfgd.codeBehindName, ns, fname, ename, modelName, ixfgd.generateViewModel, ixfgd, opts);
-            if (ixfgd.generateViewModel)
-                createModelfile(ixfgd.viewModelName, ns, modelName, ixfgd, opts);
+            if (!DefaultProjectGenerator.blah(ixfgd.codeBehindName, opts)) {
+                createMainFile(ixfgd.codeBehindName, ns, fname, ename, modelName, ixfgd.generateViewModel, ixfgd, opts);
+                if (ixfgd.generateViewModel)
+                    createModelfile(ixfgd.viewModelName, ns, modelName, ixfgd, opts);
+            }
         }
 
         static void createDirIfNeeded(string fname) {
@@ -183,7 +189,10 @@ namespace NSprojectgen {
         static void outputFile(CodeCompileUnit ccu, CodeNamespace ns, string outModelName, PGOptions opts) {
             StringBuilder sb;
 
-            if (DefaultProjectGenerator.dontOverwriteFile(outModelName))
+            //            if (!opts.forceYes )
+            //              if (DefaultProjectGenerator.dontOverwriteFile(outModelName))
+            //            return;
+            if (DefaultProjectGenerator.blah(outModelName, opts))
                 return;
             using (TextWriter sw = new StringWriter(sb = new StringBuilder())) {
                 if (ccu != null)

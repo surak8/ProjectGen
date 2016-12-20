@@ -22,13 +22,13 @@ namespace NSprojectgen {
         /// <param name="msg"></param>
 
         public static void log(string msg) {
-#if DEBUG
-			Debug.WriteLine("[DEBUG] " + msg);
-#else
+//#if DEBUG
+//			Debug.WriteLine("[DEBUG] " + msg);
+//#else
 #if TRACE
 			Trace.WriteLine("[TRACE] " + msg);
 #endif
-#endif
+//#endif
         }
 
 		internal static void log(MethodBase methodBase, string v) {

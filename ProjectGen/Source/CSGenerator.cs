@@ -40,12 +40,10 @@ namespace NSprojectgen {
             else {
                 tmp = Path.Combine(Directory.GetCurrentDirectory(), aFile);
             }
-            if (DefaultProjectGenerator.dontOverwriteFile(tmp))
+            if (DefaultProjectGenerator.blah(tmp, opts))
                 return;
             if (!Directory.Exists(dir = Path.GetDirectoryName(tmp)))
                 Directory.CreateDirectory(dir);
-            //            if ()
-            Trace.WriteLine("here");
             using (TextWriter tw = new StreamWriter(tmp)) {
                 opts.provider.GenerateCodeFromCompileUnit(createCompileUnit(aName, szVersion, opts), tw, opts.options);
             }
@@ -116,8 +114,11 @@ namespace NSprojectgen {
             if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
                 Directory.CreateDirectory(tmp);
 
-            if (DefaultProjectGenerator.dontOverwriteFile(fname))
+            if (DefaultProjectGenerator.blah(fname, opts))
                 return;
+
+            //            if (!opts.forceYes && DefaultProjectGenerator.dontOverwriteFile(fname))
+            //              return;
             using (TextWriter tw = new StreamWriter(fname)) {
                 opts.provider.GenerateCodeFromCompileUnit(createClass(opts.projectNamespace, className), tw, opts.options);
             }
@@ -144,8 +145,10 @@ namespace NSprojectgen {
             string asmName = opts.assemblyName, ext;
 
             fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\UI\\" + asmName + "Form." + (ext = opts.provider.FileExtension));
-            if (DefaultProjectGenerator.dontOverwriteFile(fname))
+            if (DefaultProjectGenerator.blah(fname, opts))
                 return;
+            //if (!opts.forceYes && DefaultProjectGenerator.dontOverwriteFile(fname))
+            //  return;
             if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
                 Directory.CreateDirectory(tmp);
 
@@ -665,7 +668,9 @@ namespace NSprojectgen {
             string fname, tmp, relName;
 
             fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\adriver." + opts.provider.FileExtension);
-            if (DefaultProjectGenerator.dontOverwriteFile(fname))
+            //            if (!opts.forceYes && DefaultProjectGenerator.dontOverwriteFile(fname))
+            //              return;
+            if (DefaultProjectGenerator.blah(fname, opts))
                 return;
             if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
                 Directory.CreateDirectory(tmp);
