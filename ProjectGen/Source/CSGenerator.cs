@@ -73,15 +73,16 @@ namespace NSprojectgen {
                     "[assembly:AssemblyCompany(\"" + companyName + "\")]",
                     "[assembly:AssemblyCopyright(\"Copyright © " + DateTime.Now.Year.ToString() + ", " + companyName + "\")]",
                     "#if DEBUG",
-                    "[assembly:AssemblyConfiguration(\"Debug assemblyVersion\")]",
+                    "[assembly:AssemblyConfiguration(\"Debug version\")]",
                     "#else",
-                    "[assembly:AssemblyConfiguration(\"Release assemblyVersion\")]",
+                    "[assembly:AssemblyConfiguration(\"Release version\")]",
                     "#endif",
                     "[assembly:ComVisible(false)]",
                     null,
-                    "[assembly:AssemblyVersion(\"" + szVersion + "\")]",
-                    "[assembly:AssemblyFileVersion(\"" + szVersion + "\")]",
-                    "[assembly:AssemblyInformationalVersion(\"" + szVersion + "\")]"));
+                    "[assembly:AssemblyVersion(\"" + szVersion + "\")]"
+                    //,"[assembly:AssemblyFileVersion(\"" + szVersion + "\")]",
+                    //"[assembly:AssemblyInformationalVersion(\"" + szVersion + "\")]"
+                    ));
             opts.provider.GenerateCodeFromMember(v2, sw, opts.options);
             sw.Flush();
             sw.Close();

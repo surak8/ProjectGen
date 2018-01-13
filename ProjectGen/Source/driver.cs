@@ -116,6 +116,10 @@ namespace NSprojectgen {
         }
 
         static void showUserHelp(TextWriter tw, Assembly a) {
+            //Assembly a = Assembly.GetEntryAssembly();
+            AssemblyName an = a.GetName();
+
+            tw.WriteLine(an.Name + " (v " + an.Version + ")");
             tw.WriteLine("usage:");
             tw.WriteLine("\t" + Path.GetFileNameWithoutExtension(a.Location) +
                 ": -[f projectFileName] -[N namespace] -[v assemblyVersion] -[t c/d/x/w] [-bDgps] [-x [n/w]] [-xf page ...]\n");

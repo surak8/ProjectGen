@@ -219,7 +219,7 @@ namespace NSprojectgen {
                 xw.WriteStartElement("configuration");
                 xw.WriteStartElement("startup");
                 xw.WriteStartElement("supportedRuntime");
-                xw.WriteAttributeString("assemblyVersion", TARGET_40);
+                xw.WriteAttributeString("version", TARGET_40);
                 xw.WriteAttributeString("sku", ".NETFramework,Version=" + (opts.projectType == ProjectType.XamlApp ? TARGET_45 : TARGET_452));
                 if (opts.projectType == ProjectType.XamlApp)
                     xw.WriteAttributeString("version", TARGET_40);

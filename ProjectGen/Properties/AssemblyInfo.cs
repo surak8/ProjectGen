@@ -8,3 +8,19 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyTitle("projectgen")]
+[assembly: AssemblyProduct("projectgen")]
+[assembly: AssemblyDescription("description of projectgen.")]
+[assembly: AssemblyCompany("Rik Cousens")]
+[assembly: AssemblyCopyright("Copyright © 2018, Rik Cousens")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug version")]
+#else
+[assembly:AssemblyConfiguration("Release version")]
+#endif
+[assembly: ComVisible(false)]
+
+[assembly: AssemblyVersion("1.0.1.0")]
