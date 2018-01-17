@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("projectgen")]
 [assembly: AssemblyDescription("description of projectgen.")]
 [assembly: AssemblyCompany("Rik Cousens")]
-[assembly: AssemblyCopyright("Copyright © 2018, Rik Cousens")]
+[assembly: AssemblyCopyright("Copyright © 2017-2018, Rik Cousens")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug version")]
 #else
@@ -23,4 +23,4 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.0.1.0")]
+[assembly: AssemblyVersion("1.0.1.1")]

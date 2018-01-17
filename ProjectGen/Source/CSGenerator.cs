@@ -2,6 +2,7 @@ using System;
 using System.CodeDom;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
@@ -40,10 +41,12 @@ namespace NSprojectgen {
             else {
                 tmp = Path.Combine(Directory.GetCurrentDirectory(), aFile);
             }
-            if (DefaultProjectGenerator.blah(tmp, opts))
+            if (DefaultProjectGenerator.showOverwriteStatus(tmp, opts))
                 return;
             if (!Directory.Exists(dir = Path.GetDirectoryName(tmp)))
                 Directory.CreateDirectory(dir);
+            if (opts.verbose)
+                Console.WriteLine("[verbose] writing: " + tmp);
             using (TextWriter tw = new StreamWriter(tmp)) {
                 opts.provider.GenerateCodeFromCompileUnit(createCompileUnit(aName, szVersion, opts), tw, opts.options);
             }
@@ -80,8 +83,6 @@ namespace NSprojectgen {
                     "[assembly:ComVisible(false)]",
                     null,
                     "[assembly:AssemblyVersion(\"" + szVersion + "\")]"
-                    //,"[assembly:AssemblyFileVersion(\"" + szVersion + "\")]",
-                    //"[assembly:AssemblyInformationalVersion(\"" + szVersion + "\")]"
                     ));
             opts.provider.GenerateCodeFromMember(v2, sw, opts.options);
             sw.Flush();
@@ -104,6 +105,9 @@ namespace NSprojectgen {
         }
 
         static void generateXaml(ProjectItemGroupElement pige2, PGOptions opts) {
+            if (opts.verbose)
+
+                Console.WriteLine(Logger.makeSig(MethodBase.GetCurrentMethod()) + ": do something here?");
             Trace.WriteLine("do something for XAML");
         }
 
@@ -115,11 +119,10 @@ namespace NSprojectgen {
             if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
                 Directory.CreateDirectory(tmp);
 
-            if (DefaultProjectGenerator.blah(fname, opts))
+            if (DefaultProjectGenerator.showOverwriteStatus(fname, opts))
                 return;
-
-            //            if (!opts.forceYes && DefaultProjectGenerator.dontOverwriteFile(fname))
-            //              return;
+            if (opts.verbose)
+                Console.WriteLine("[verbose] writing: " + fname);
             using (TextWriter tw = new StreamWriter(fname)) {
                 opts.provider.GenerateCodeFromCompileUnit(createClass(opts.projectNamespace, className), tw, opts.options);
             }
@@ -146,19 +149,21 @@ namespace NSprojectgen {
             string asmName = opts.assemblyName, ext;
 
             fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\UI\\" + asmName + "Form." + (ext = opts.provider.FileExtension));
-            if (DefaultProjectGenerator.blah(fname, opts))
+            if (DefaultProjectGenerator.showOverwriteStatus(fname, opts))
                 return;
-            //if (!opts.forceYes && DefaultProjectGenerator.dontOverwriteFile(fname))
-            //  return;
             if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
                 Directory.CreateDirectory(tmp);
 
+            if (opts.verbose)
+                Console.WriteLine("[verbose] writing: " + fname);
             using (TextWriter tw = new StreamWriter(fname)) {
                 opts.provider.GenerateCodeFromCompileUnit(createCCUForm(opts.projectNamespace, asmName, opts.doDevExpress), tw, opts.options);
             }
 
             fname = Path.Combine(Directory.GetCurrentDirectory(), relName2 = "Source\\UI\\" + asmName + "Form.Designer." + ext);
 
+            if (opts.verbose)
+                Console.WriteLine("[verbose] writing: " + fname);
             using (TextWriter tw = new StreamWriter(fname)) {
                 opts.provider.GenerateCodeFromCompileUnit(createCCUDesigner(opts.projectNamespace, asmName, opts.doDevExpress), tw, opts.options);
             }
@@ -242,7 +247,7 @@ namespace NSprojectgen {
 
             foreach (var avar in ctd.Members)
                 if (avar.GetType().Equals(typeof(CodeMemberField)))
-                    ((CodeMemberField)avar).Attributes = 0;
+                    ((CodeMemberField) avar).Attributes = 0;
             m = addInitComp(ctd, devExpress);
             m = addDispose(ctd, m, fContainer);
 
@@ -492,7 +497,7 @@ namespace NSprojectgen {
             tr = null;
             foreach (var avar in ctd.Members)
                 if (avar.GetType().Equals(typeof(CodeMemberField)) &&
-                    ((CodeMemberField)avar).Name.CompareTo(fldName) == 0) {
+                    ((CodeMemberField) avar).Name.CompareTo(fldName) == 0) {
                     f = avar as CodeMemberField;
                     tr = f.Type;
                     return new CodeFieldReferenceExpression(ceThis, f.Name);
@@ -669,14 +674,16 @@ namespace NSprojectgen {
             string fname, tmp, relName;
 
             fname = Path.Combine(Directory.GetCurrentDirectory(), relName = "Source\\adriver." + opts.provider.FileExtension);
-            //            if (!opts.forceYes && DefaultProjectGenerator.dontOverwriteFile(fname))
-            //              return;
-            if (DefaultProjectGenerator.blah(fname, opts))
+            if (DefaultProjectGenerator.showOverwriteStatus(fname, opts))
                 return;
             if (!Directory.Exists(tmp = Path.GetDirectoryName(fname)))
                 Directory.CreateDirectory(tmp);
 
+            if (opts.verbose)
+                Console.WriteLine("[verbose] writing: " + fname);
             using (TextWriter tw = new StreamWriter(fname)) {
+                if (opts.verbose)
+                    Console.WriteLine("generating: " + fname);
                 opts.provider.GenerateCodeFromCompileUnit(createCCUMain(opts.projectNamespace, opts.assemblyName, false), tw, opts.options);
             }
             pige2.AddItem("Compile", relName);

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -61,6 +60,8 @@ namespace NSprojectgen {
 
             if (File.Exists(opts.projectFileName))
                 try {
+                    if (opts.verbose)
+                        Console.WriteLine("[verbose] rewriting: " + opts.projectFileName);
                     p = new Project(opts.projectFileName);
                 } catch (Exception ex) {
                     Console.Error.WriteLine("failed to open " + opts.projectFileName + " [" + ex.Message + "]");
@@ -76,7 +77,7 @@ namespace NSprojectgen {
             }
             doStuff(p, opts, generate);
             p.Save(opts.projectFileName);
-            Debug.Print("saved: " + opts.projectFileName);
+            Console.WriteLine("saved: " + opts.projectFileName);
         }
 
         static void doStuff(Project p, PGOptions opts, bool generate) {
@@ -139,23 +140,22 @@ namespace NSprojectgen {
                     vvv.AddItem("Reference", "DevExpress.Data.v12.2");
                 }
 
-                if (opts.usePhibroStyle)
-                    generatePhibroSection(p);
+                //if (opts.usePhibroStyle)
+                //    generatePhibroSection(p);
             }
 
             var p3 = p.Xml.AddImport("$(MSBuildToolsPath)\\Microsoft.CSharp.targets");
-            if (opts.usePhibroStyle) {
-                // G:\MIS\icts\MSBuild\2010
-                p.Xml.AddImport("$(MSPEIRules)\\Phibro.CopyBundle.Targets");
-                p.Xml.AddImport("$(MSPEIRules)\\Phibro.CopyToShared.Targets");
-                p.Xml.AddImport("$(MSPEIRules)\\Phibro.LightWeightAssembly.Targets");
-            }
+            //if (opts.usePhibroStyle) {
+            //    p.Xml.AddImport("$(MSPEIRules)\\Phibro.CopyBundle.Targets");
+            //    p.Xml.AddImport("$(MSPEIRules)\\Phibro.CopyToShared.Targets");
+            //    p.Xml.AddImport("$(MSPEIRules)\\Phibro.LightWeightAssembly.Targets");
+            //}
             if (opts.projectType != ProjectType.XamlApp) {
                 var v0 = p.Xml.AddPropertyGroup();
                 v0.AddProperty("StartupObject", string.Empty);
             }
-            if (opts.usePhibroStyle)
-                generatePhibroRules(p);
+            //if (opts.usePhibroStyle)
+            //    generatePhibroRules(p);
         }
 
         static void generateCommonFiles(Project p, PGOptions opts) {
@@ -211,7 +211,7 @@ namespace NSprojectgen {
             xws.IndentChars = new string(' ', 4);
             xws.Encoding = Encoding.ASCII;
             xws.Encoding = Encoding.UTF8;
-            if (blah(filename, opts))
+            if (showOverwriteStatus(filename, opts))
                 return;
 
             using (XmlWriter xw = XmlWriter.Create(filename, xws)) {
@@ -226,22 +226,22 @@ namespace NSprojectgen {
 
                 xw.WriteEndElement();
                 xw.WriteEndElement();
-                if (opts.usePhibroStyle) {
-                    xw.WriteStartElement("runtime");
-                    xw.WriteStartElement("assemblyBinding", "urn:schemas-microsoft-com:asm.targetElement");
-                    xw.WriteStartElement("probing");
-                    xw.WriteAttributeString("privatePath", "assemblies\\" + PEI_PROVIDER_NAME + "\\" + PEI_COMMON_DEFAULT_VERSION);
-                    xw.WriteEndElement();
-                    xw.WriteEndElement();
-                    xw.WriteEndElement();
-                }
+                //if (opts.usePhibroStyle) {
+                //    xw.WriteStartElement("runtime");
+                //    xw.WriteStartElement("assemblyBinding", "urn:schemas-microsoft-com:asm.targetElement");
+                //    xw.WriteStartElement("probing");
+                //    xw.WriteAttributeString("privatePath", "assemblies\\" + PEI_PROVIDER_NAME + "\\" + PEI_COMMON_DEFAULT_VERSION);
+                //    xw.WriteEndElement();
+                //    xw.WriteEndElement();
+                //    xw.WriteEndElement();
+                //}
                 xw.WriteEndElement();
                 xw.WriteEndDocument();
             }
 
         }
 
-        internal static bool blah(string filename, PGOptions opts) {
+        internal static bool showOverwriteStatus(string filename, PGOptions opts) {
             if (File.Exists(filename)) {
                 if (opts.forceNo) {
                     Console.WriteLine("not over-writing:" + filename);
@@ -253,10 +253,6 @@ namespace NSprojectgen {
                     }
                 }
             }
-            //            if (opts.forceno)
-            //              if (!opts.forceYes)
-            //                if (dontOverwriteFile(filename))
-            //                  return;
             return false;
         }
 
@@ -274,35 +270,35 @@ namespace NSprojectgen {
             return c == 'N';
         }
 
-        static void generatePhibroSection(Project p) {
-            Debug.Print("generatePhibroSection");
+        //[Obsolete("remove all references to this", true)]
+        //static void generatePhibroSection(Project p) {
+        //    var avar = p.Xml.AddPropertyGroup();
+        //    avar.Label = "PhibroProperties";
+        //    avar.AddProperty(PEI_RULES_DIR, @"G:\MIS\icts\MSBuild\2010");
+        //    avar.AddProperty(PEI_BASE_ASM_FOLDER, @"G:\MIS\phibro\shared\assemblies");
+        //    avar.AddProperty(PEI_SHARED_DIR, "$(" + PEI_BASE_ASM_FOLDER + ")\\$(" + KEY_CFG + ")");
 
-            var avar = p.Xml.AddPropertyGroup();
-            avar.Label = "PhibroProperties";
-            avar.AddProperty(PEI_RULES_DIR, @"G:\MIS\icts\MSBuild\2010");
-            avar.AddProperty(PEI_BASE_ASM_FOLDER, @"G:\MIS\phibro\shared\assemblies");
-            avar.AddProperty(PEI_SHARED_DIR, "$(" + PEI_BASE_ASM_FOLDER + ")\\$(" + KEY_CFG + ")");
+        //    avar.AddProperty(PEI_COMMON_VERSION, PEI_COMMON_DEFAULT_VERSION);
+        //    createNullProperty1(avar, PEI_ASM_VERSION, PEI_COMMON_VERSION);
+        //    createNullProperty1(avar, PEI_ASM_BUNDLE, "AssemblyName");
 
-            avar.AddProperty(PEI_COMMON_VERSION, PEI_COMMON_DEFAULT_VERSION);
-            createNullProperty1(avar, PEI_ASM_VERSION, PEI_COMMON_VERSION);
-            createNullProperty1(avar, PEI_ASM_BUNDLE, "AssemblyName");
+        //    createNullProperty(avar, PEI_COPY_ALL_FILES, "false");
+        //    createNullProperty(avar, PEI_VERBOSE, "false");
 
-            createNullProperty(avar, PEI_COPY_ALL_FILES, "false");
-            createNullProperty(avar, PEI_VERBOSE, "false");
+        //    createPhibroItems(p);
+        //}
 
-            createPhibroItems(p);
-        }
+        //static void createPhibroItems(Project p) {
+        //    var avar2 = p.Xml.AddItemGroup();
+        //    avar2.Label = "PhibroItems";
 
-        static void createPhibroItems(Project p) {
-            var avar2 = p.Xml.AddItemGroup();
-            avar2.Label = "PhibroItems";
+        //    var avar3 = avar2.AddItem(PEI_ITEM_NAME, "refs\\peidb.ref");
+        //    avar3.AddMetadata(PEI_ITEM_META_NAME, PEI_PROVIDER_NAME);
+        //    avar3.AddMetadata(PEI_ITEM_META_VERSION, propRef(PEI_COMMON_VERSION));
+        //    avar3.AddMetadata(PEI_ITEM_META_MULTI, "false");
+        //}
 
-            var avar3 = avar2.AddItem(PEI_ITEM_NAME, "refs\\peidb.ref");
-            avar3.AddMetadata(PEI_ITEM_META_NAME, PEI_PROVIDER_NAME);
-            avar3.AddMetadata(PEI_ITEM_META_VERSION, propRef(PEI_COMMON_VERSION));
-            avar3.AddMetadata(PEI_ITEM_META_MULTI, "false");
-        }
-
+        [Obsolete("remove all references to this", true)]
         static void generatePhibroRules(Project p) {
             var v0 = p.Xml.AddTarget(PEI_RULE_BRR);
             v0.DependsOnTargets = PEI_RULE_PCP + ";copyBundles";

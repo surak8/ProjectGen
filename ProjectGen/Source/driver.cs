@@ -72,8 +72,9 @@ namespace NSprojectgen {
                                 case 'D': opts.doDevExpress = true; break;
                                 case 'g': opts.generateCode = true; break;
                                 case 'n': opts.forceNo = true; break;
-                                case 'p': opts.usePhibroStyle = true; break;
+                                //case 'p': opts.usePhibroStyle = true; break;
                                 case 's': opts.simplyProject = true; break;
+                                case 'V': opts.verbose = true;break;
                                 case 'y': opts.forceYes = true; break;
                                 case 'h': showHelp = true; break;
                                 case '?': showHelp = true; break;
@@ -86,8 +87,8 @@ namespace NSprojectgen {
             // -g generate-code
             // -p phibro-style
             // -s simplyProject
-            if (opts.simplyProject)
-                opts.usePhibroStyle = false;
+            //if (opts.simplyProject)
+            //    opts.usePhibroStyle = false;
             if (showHelp)
                 showUserHelp(Console.Error, Assembly.GetEntryAssembly());
             else {
@@ -116,7 +117,6 @@ namespace NSprojectgen {
         }
 
         static void showUserHelp(TextWriter tw, Assembly a) {
-            //Assembly a = Assembly.GetEntryAssembly();
             AssemblyName an = a.GetName();
 
             tw.WriteLine(an.Name + " (v " + an.Version + ")");
@@ -127,7 +127,7 @@ namespace NSprojectgen {
             tw.WriteLine("-C\tgenerate C++ project.");
             tw.WriteLine("-D\tgenerate DevExpress project.");
             tw.WriteLine("-g\tgenerate code.");
-            tw.WriteLine("-p\tgenerate phibro-style project.");
+            //tw.WriteLine("-p\tgenerate phibro-style project.");
             tw.WriteLine("-n\tforce 'NO' to file-overwrite.");
             tw.WriteLine("-s\tgenerate simply project.");
             tw.WriteLine("-y\tforce 'YES' to file-overwrite.");

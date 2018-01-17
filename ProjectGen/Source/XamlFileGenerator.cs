@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Microsoft.CSharp;
 
 // -f WpfApplication1 -tx -xn -g -n WpfApplication1 -xf Page0 -xf Page1 -xf Page2
 // -f SnertPopulator -n NSSnertPop -g -tx -xn -xf AddRange -xf DeleteRange -xf ModifyRange -xf Allocate -xf CreateJob -xf MaintainData 
@@ -72,10 +71,7 @@ namespace NSprojectgen {
                 ixfgd.xamlName = fname + ".xaml";
             ns = ixfgd.nameSpace;
             sb = new StringBuilder();
-            //            if (!opts.forceYes ) 
-            //              if ( DefaultProjectGenerator.dontOverwriteFile(ixfgd.xamlName))
-            //            return;
-            if (!DefaultProjectGenerator.blah(ixfgd.xamlName, opts)) {
+            if (!DefaultProjectGenerator.showOverwriteStatus(ixfgd.xamlName, opts)) {
                 using (StringWriter sw = new StringWriter(sb)) {
                     using (XmlWriter xw = XmlWriter.Create(sw, settings)) {
                         xw.WriteStartElement(ename, NS_DEFAULT);
@@ -88,9 +84,13 @@ namespace NSprojectgen {
                         xw.WriteEndDocument();
                     }
                 }
-                if (showFileContent)
+                if (showFileContent) {
                     Debug.Print(sb.ToString());
+                    Console.Error.WriteLine("[FILECONTENT] " + sb.ToString());
+                }
                 createDirIfNeeded(ixfgd.xamlName);
+                if (opts.verbose)
+                    Console.WriteLine("[verbose] writing: " + ixfgd.xamlName);
                 File.WriteAllText(ixfgd.xamlName, sb.ToString());
 
             }
@@ -103,7 +103,7 @@ namespace NSprojectgen {
                 ixfgd.codeBehindName = fname + ".xaml." + ext;
                 ixfgd.viewModelName = modelName + "." + ext;
             }
-            if (!DefaultProjectGenerator.blah(ixfgd.codeBehindName, opts)) {
+            if (!DefaultProjectGenerator.showOverwriteStatus(ixfgd.codeBehindName, opts)) {
                 createMainFile(ixfgd.codeBehindName, ns, fname, ename, modelName, ixfgd.generateViewModel, ixfgd, opts);
                 if (ixfgd.generateViewModel)
                     createModelfile(ixfgd.viewModelName, ns, modelName, ixfgd, opts);
@@ -189,10 +189,7 @@ namespace NSprojectgen {
         static void outputFile(CodeCompileUnit ccu, CodeNamespace ns, string outModelName, PGOptions opts) {
             StringBuilder sb;
 
-            //            if (!opts.forceYes )
-            //              if (DefaultProjectGenerator.dontOverwriteFile(outModelName))
-            //            return;
-            if (DefaultProjectGenerator.blah(outModelName, opts))
+            if (DefaultProjectGenerator.showOverwriteStatus(outModelName, opts))
                 return;
             using (TextWriter sw = new StringWriter(sb = new StringBuilder())) {
                 if (ccu != null)
@@ -202,8 +199,10 @@ namespace NSprojectgen {
             }
             createDirIfNeeded(outModelName);
             File.WriteAllText(outModelName, sb.ToString());
-            if (showFileContent)
+            if (showFileContent) {
                 Debug.Print(sb.ToString());
+                Console.Error.WriteLine("[FILECONTENT] " + sb.ToString());
+            }
             sb.Clear();
             sb = null;
         }
@@ -220,11 +219,6 @@ namespace NSprojectgen {
 
         static CodeMemberMethod createMethod1(string methodName, CodeEventReferenceExpression cere, CodeArgumentReferenceExpression ar) {
             CodeMemberMethod ret = new CodeMemberMethod();
-            /*
-            * void firePropertyChanged(string v) {
-            *      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(v));
-            * }
-            * */
 
             ret.Attributes = MemberAttributes.Public | MemberAttributes.Final;
             ret.Name = methodName;
@@ -248,16 +242,6 @@ namespace NSprojectgen {
             CodePropertyReferenceExpression mbNameLen = new CodePropertyReferenceExpression(mbName, "Length");
             CodeVariableReferenceExpression vr = new CodeVariableReferenceExpression("n");
 
-            /*
-             * void firePropertyChanged(MethodBase mb) {
-             *      int n;
-             *      if ((n = mb.Name.Length) > 4) {
-             *          if (string.Compare(mb.Name.Substring(0, 3), "set", true) == 0 ||
-             *              string.Compare(mb.Name.Substring(0, 3), "get", true) == 0)
-             *              firePropertyChanged(mb.Name.Substring(4));
-             *      }
-             * }
-             * */
             ret.Parameters.Add(new CodeParameterDeclarationExpression("MethodBase", ar2.ParameterName));
             ret.Attributes = MemberAttributes.Public | MemberAttributes.Final;
             ret.Name = methodName;

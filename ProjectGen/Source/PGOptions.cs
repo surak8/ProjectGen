@@ -18,7 +18,7 @@ namespace NSprojectgen {
 		#region ctor
 		public PGOptions() {
 			projectType = ProjectType.ConsoleApp;
-			this.usePhibroStyle = false;
+			//this.usePhibroStyle = false;
 			assemblyName = LISTENER_NAME;
 			projectFileName = assemblyName + ".csproj";
 			assemblyVersion = "1.0.0.0";
@@ -37,8 +37,9 @@ namespace NSprojectgen {
 		public bool simplyProject { get; set; }
 		public bool generateCode { get; set; }
 		public bool isCPPProject { get; set; }
-		public bool usePhibroStyle { get; set; }
-		public string projectFileName { get; set; }
+        //[Obsolete("remove all references to this",true)]
+        //public bool usePhibroStyle { get; set; }
+        public string projectFileName { get; set; }
 		public string assemblyVersion { get; set; }
 		public string projectNamespace { get; private set; }
 		public XamlWindowType xamlType { get; set; }
@@ -48,6 +49,7 @@ namespace NSprojectgen {
 		public bool isVB { get; set; }
         public bool forceYes { get; internal set; }
         public bool forceNo{ get; internal set; }
+        public bool verbose { get; internal set; }
         #endregion
 
         #region methods
