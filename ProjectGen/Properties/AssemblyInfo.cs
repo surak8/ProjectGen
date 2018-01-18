@@ -23,4 +23,4 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.0.1.1")]
+[assembly: AssemblyVersion("1.0.1.2")]

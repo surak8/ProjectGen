@@ -122,7 +122,7 @@ namespace NSprojectgen {
             tw.WriteLine(an.Name + " (v " + an.Version + ")");
             tw.WriteLine("usage:");
             tw.WriteLine("\t" + Path.GetFileNameWithoutExtension(a.Location) +
-                ": -[f projectFileName] -[N namespace] -[v assemblyVersion] -[t c/d/x/w] [-bDgps] [-x [n/w]] [-xf page ...]\n");
+                ": -[f projectFileName] -[N namespace] -[v assemblyVersion] -[t c/d/x/w] [-bDgpsV] [-x [n/w]] [-xf page ...]\n");
             tw.WriteLine("-b\tgenerate VB.");
             tw.WriteLine("-C\tgenerate C++ project.");
             tw.WriteLine("-D\tgenerate DevExpress project.");
@@ -130,6 +130,7 @@ namespace NSprojectgen {
             //tw.WriteLine("-p\tgenerate phibro-style project.");
             tw.WriteLine("-n\tforce 'NO' to file-overwrite.");
             tw.WriteLine("-s\tgenerate simply project.");
+            tw.WriteLine("-V\tverbose processing.");
             tw.WriteLine("-y\tforce 'YES' to file-overwrite.");
             tw.WriteLine("-tc\tgenerate console application.");
             tw.WriteLine("-td\tgenerate dll.");
