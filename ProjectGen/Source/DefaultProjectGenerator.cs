@@ -1,10 +1,10 @@
+using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Microsoft.Build.Construction;
-using Microsoft.Build.Evaluation;
 
 namespace NSprojectgen {
     static class DefaultProjectGenerator {
@@ -27,31 +27,11 @@ namespace NSprojectgen {
 
         public const string PROPERTY_DIR = "Properties";
         const string APP_CFG = "app.config";
-        const string PEI_RULES_DIR = "MSPEIRules";
-        const string PEI_BASE_ASM_FOLDER = "_BaseAsmFolder";
-        const string PEI_SHARED_DIR = "SharedDir";
-        const string PEI_COPY_ALL_FILES = "CopyAllFiles";
-        const string PEI_COMMON_VERSION = "CommonVersion";
-        const string PEI_COMMON_DEFAULT_VERSION = "4.1.0.0";
-        const string PEI_ASM_VERSION = "AssemblyVersion";
-        const string PEI_ASM_BUNDLE = "AssemblyBundleName";
-        const string PEI_VERBOSE = "Verbose";
-        const string PEI_ITEM_NAME = "BundleToCopy";
-        const string PEI_ITEM_META_NAME = "BundleName";
-        const string PEI_ITEM_META_VERSION = "BundleVersion";
-        const string PEI_ITEM_META_MULTI = "HasMultipleItems";
-        const string PEI_PROVIDER_NAME = "PEIDBProvider";
-        const string PEI_RULE_BRR = "BeforeResolveReferences";
-        const string PEI_RULE_PCP = "precreateProps";
-        const string PEI_PROP_LOCAL_ASM_FOLDER = "LocalAssemblyFolder";
         #endregion
 
         #region fields
         static bool createConfig = true;
         static bool createAsmInfo = true;
-        static readonly string BNAME = PEI_ITEM_NAME + "." + PEI_ITEM_META_NAME;
-        static readonly string BNAME_VERSION = PEI_ITEM_NAME + "." + PEI_ITEM_META_VERSION;
-        static readonly string BNAME_MULTI = PEI_ITEM_NAME + "." + PEI_ITEM_META_MULTI;
         #endregion
 
         internal static void generate(PGOptions opts, bool rebuild) {
@@ -139,23 +119,13 @@ namespace NSprojectgen {
                     vvv.AddItem("Reference", "DevExpress.XtraEditors.v12.2");
                     vvv.AddItem("Reference", "DevExpress.Data.v12.2");
                 }
-
-                //if (opts.usePhibroStyle)
-                //    generatePhibroSection(p);
             }
 
             var p3 = p.Xml.AddImport("$(MSBuildToolsPath)\\Microsoft.CSharp.targets");
-            //if (opts.usePhibroStyle) {
-            //    p.Xml.AddImport("$(MSPEIRules)\\Phibro.CopyBundle.Targets");
-            //    p.Xml.AddImport("$(MSPEIRules)\\Phibro.CopyToShared.Targets");
-            //    p.Xml.AddImport("$(MSPEIRules)\\Phibro.LightWeightAssembly.Targets");
-            //}
             if (opts.projectType != ProjectType.XamlApp) {
                 var v0 = p.Xml.AddPropertyGroup();
                 v0.AddProperty("StartupObject", string.Empty);
             }
-            //if (opts.usePhibroStyle)
-            //    generatePhibroRules(p);
         }
 
         static void generateCommonFiles(Project p, PGOptions opts) {
@@ -219,26 +189,16 @@ namespace NSprojectgen {
                 xw.WriteStartElement("configuration");
                 xw.WriteStartElement("startup");
                 xw.WriteStartElement("supportedRuntime");
-                xw.WriteAttributeString("version", TARGET_40);
+                string the_version = TARGET_40;
                 xw.WriteAttributeString("sku", ".NETFramework,Version=" + (opts.projectType == ProjectType.XamlApp ? TARGET_45 : TARGET_452));
                 if (opts.projectType == ProjectType.XamlApp)
-                    xw.WriteAttributeString("version", TARGET_40);
-
+                    the_version = TARGET_40;
+                xw.WriteAttributeString("version", the_version);
                 xw.WriteEndElement();
                 xw.WriteEndElement();
-                //if (opts.usePhibroStyle) {
-                //    xw.WriteStartElement("runtime");
-                //    xw.WriteStartElement("assemblyBinding", "urn:schemas-microsoft-com:asm.targetElement");
-                //    xw.WriteStartElement("probing");
-                //    xw.WriteAttributeString("privatePath", "assemblies\\" + PEI_PROVIDER_NAME + "\\" + PEI_COMMON_DEFAULT_VERSION);
-                //    xw.WriteEndElement();
-                //    xw.WriteEndElement();
-                //    xw.WriteEndElement();
-                //}
                 xw.WriteEndElement();
                 xw.WriteEndDocument();
             }
-
         }
 
         internal static bool showOverwriteStatus(string filename, PGOptions opts) {
@@ -268,66 +228,6 @@ namespace NSprojectgen {
                 Console.Out.WriteLine();
             } while ((c = char.ToUpper(response.KeyChar)) != 'Y' && c != 'N');
             return c == 'N';
-        }
-
-        //[Obsolete("remove all references to this", true)]
-        //static void generatePhibroSection(Project p) {
-        //    var avar = p.Xml.AddPropertyGroup();
-        //    avar.Label = "PhibroProperties";
-        //    avar.AddProperty(PEI_RULES_DIR, @"G:\MIS\icts\MSBuild\2010");
-        //    avar.AddProperty(PEI_BASE_ASM_FOLDER, @"G:\MIS\phibro\shared\assemblies");
-        //    avar.AddProperty(PEI_SHARED_DIR, "$(" + PEI_BASE_ASM_FOLDER + ")\\$(" + KEY_CFG + ")");
-
-        //    avar.AddProperty(PEI_COMMON_VERSION, PEI_COMMON_DEFAULT_VERSION);
-        //    createNullProperty1(avar, PEI_ASM_VERSION, PEI_COMMON_VERSION);
-        //    createNullProperty1(avar, PEI_ASM_BUNDLE, "AssemblyName");
-
-        //    createNullProperty(avar, PEI_COPY_ALL_FILES, "false");
-        //    createNullProperty(avar, PEI_VERBOSE, "false");
-
-        //    createPhibroItems(p);
-        //}
-
-        //static void createPhibroItems(Project p) {
-        //    var avar2 = p.Xml.AddItemGroup();
-        //    avar2.Label = "PhibroItems";
-
-        //    var avar3 = avar2.AddItem(PEI_ITEM_NAME, "refs\\peidb.ref");
-        //    avar3.AddMetadata(PEI_ITEM_META_NAME, PEI_PROVIDER_NAME);
-        //    avar3.AddMetadata(PEI_ITEM_META_VERSION, propRef(PEI_COMMON_VERSION));
-        //    avar3.AddMetadata(PEI_ITEM_META_MULTI, "false");
-        //}
-
-        [Obsolete("remove all references to this", true)]
-        static void generatePhibroRules(Project p) {
-            var v0 = p.Xml.AddTarget(PEI_RULE_BRR);
-            v0.DependsOnTargets = PEI_RULE_PCP + ";copyBundles";
-            addCreateItem(
-                v0,
-              itemRef(BNAME),
-                nullCondItemRef(BNAME, false) + " and " +
-                makeCondition(itemRef(BNAME_MULTI), "true", false),
-                "Private=false;" +
-                "HintPath=" + propRef(PEI_PROP_LOCAL_ASM_FOLDER) + "\\" + itemRef(BNAME) + "\\" +
-                    itemRef(BNAME_VERSION) + "\\" + itemRef(BNAME) + ".dll;" +
-                "Name=" + itemRef(BNAME) + ".dll;",
-                "Reference");
-            var v1 = p.Xml.AddTarget(PEI_RULE_PCP);
-            string tmp = itemRef("_OutputPathItem.FullPath");
-            addCreateProperty(v1,
-                tmp + "\\assemblies",
-                "!HasTrailingSlash('" + tmp + "')",
-               PEI_PROP_LOCAL_ASM_FOLDER);
-            addCreateProperty(v1,
-                tmp + "assemblies",
-                "HasTrailingSlash('" + tmp + "')",
-                PEI_PROP_LOCAL_ASM_FOLDER);
-
-            var v2 = v1.AddTask("Message");
-
-            v2.SetParameter("Importance", "high");
-            v2.SetParameter("Text", PEI_PROP_LOCAL_ASM_FOLDER + "=" + propRef(PEI_PROP_LOCAL_ASM_FOLDER));
-            v2.Condition = makeCondition(propRef(PEI_VERBOSE), "true", true);
         }
 
         static void addCreateProperty(ProjectTargetElement targetElement, string taskValue, string taskCondition, string taskOutputValue) {

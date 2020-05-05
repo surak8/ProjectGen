@@ -45,6 +45,7 @@ namespace NSprojectgen {
                     _xws.OmitXmlDeclaration = true;
                     _xws.NewLineOnAttributes = true;
                     _xws.NewLineHandling = NewLineHandling.None;
+                    _xws.NewLineChars = Environment.NewLine;
                 }
                 return _xws;
             }

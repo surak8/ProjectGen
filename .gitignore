@@ -1,0 +1,7 @@
+bin
+obj
+release
+debug
+.vs
+*.csproj.user
+GlobalSuppressions.cs

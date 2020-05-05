@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -15,7 +16,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("projectgen")]
 [assembly: AssemblyDescription("description of projectgen.")]
 [assembly: AssemblyCompany("Rik Cousens")]
-[assembly: AssemblyCopyright("Copyright © 2017-2018, Rik Cousens")]
+[assembly: AssemblyCopyright("Copyright © 2017-2020, Rik Cousens")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug version")]
 #else
@@ -23,4 +24,10 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.0.1.2")]
+[assembly: AssemblyVersion("1.0.2.0")]
+// This file is used by Code Analysis to maintain SuppressMessage
+// attributes that are applied to this project.
+// Project-level suppressions either have no target or are given
+// a specific target and scoped to a namespace, type, member, etc.
+
+[assembly: SuppressMessage("Style","IDE1006:Naming Styles"	)]

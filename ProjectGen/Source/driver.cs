@@ -3,10 +3,21 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
+// need reference: Microsoft.VisualC.VSCodeProvider
+// need reference: MCppCodeProvider
+
+
 // -f WpfApplication -tx -g -xn -xf Page0 -xf Page1
 // -g -f MyApp -tx   -xn -xf Page1
 // -tx -g -xf dummy
 
+/*
+ * args: -f ScannerBeep -tx -Vy  -xw -g
+ * Path: C:\Users\rtcousens\source\DevOps\ScannerBeep
+*/
+
+    /*
+     * */
 namespace NSprojectgen {
 
     class driver {

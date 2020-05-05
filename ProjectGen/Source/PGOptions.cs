@@ -24,9 +24,10 @@ namespace NSprojectgen {
 			assemblyVersion = "1.0.0.0";
 			calculateNamespace();
 			xamlType = XamlWindowType.NONE;
-			options = new CodeGeneratorOptions();
-			options.BlankLinesBetweenMembers = false;
-			options.ElseOnClosing = true;
+			options = new CodeGeneratorOptions {
+				BlankLinesBetweenMembers = false,
+				ElseOnClosing = true
+			};
 		}
 		#endregion
 
@@ -70,9 +71,10 @@ namespace NSprojectgen {
 		}
 
 		internal void createProvider() {
-			if (this.isCPPProject)
-				provider = new Microsoft.VisualC.CppCodeProvider();
-			else {
+			if (this.isCPPProject) {
+				//provider = new CppCodeProvider();
+				provider = new MyVCProvider();
+			} else {
 				if (isVB)
 					provider = new Microsoft.VisualBasic.VBCodeProvider();
 				else
@@ -86,5 +88,18 @@ namespace NSprojectgen {
 		NONE = 0,
 		RegularWindow = 1,
 		NavigationWindow = 2,
+	}
+
+	public class MyVCProvider : CodeDomProvider {
+		public MyVCProvider() {
+		}
+
+		public override ICodeCompiler CreateCompiler() {
+			throw new NotImplementedException();
+		}
+
+		public override ICodeGenerator CreateGenerator() {
+			throw new NotImplementedException();
+		}
 	}
 }
