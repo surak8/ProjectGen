@@ -5,3 +5,4 @@ debug
 .vs
 *.csproj.user
 GlobalSuppressions.cs
+docheckout.bat
