@@ -1,6 +1,0 @@
-﻿exec examples:
-
-C:\Users\rtcousens\source\gitlab\ProjectGen\ProjectGen\bin\debug\projectgen.exe
--f database_driver -yV -g -tx -xn
-C:\Users\rtcousens\source\database_driver
-
