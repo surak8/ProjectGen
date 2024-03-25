@@ -82,7 +82,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DebuggingConfigs.txt" />
+    <Content Include="docs\DebuggingConfigs.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
